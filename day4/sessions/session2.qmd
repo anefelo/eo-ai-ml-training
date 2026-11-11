@@ -1,0 +1,319 @@
+---
+title: "Session 2: LSTM Drought Monitoring Lab"
+subtitle: "Hands-on LSTM Forecasting of Sentinel-2 NDVI for Mindanao"
+date: last-modified
+author: "Dimitrios Kasampalis"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+---
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="../../index.html">Home</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <a href="../index.html">Day 4</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <span class="breadcrumb-current">Session 2</span>
+</nav>
+
+::: {.hero}
+# Session 2: LSTM Drought Monitoring Lab
+
+### Hands-on LSTM Forecasting of Sentinel-2 NDVI for Mindanao
+
+Forecast next month's vegetation condition for Bukidnon and South Cotabato and turn the forecast into drought alerts
+:::
+
+## Session Overview
+
+This 2.5-hour lab puts the LSTM theory from Session 1 into practice on real data. You load a monthly Sentinel-2 NDVI series for two Mindanao provinces (live from Google Earth Engine, or from a cached sample), build sliding-window training samples, train a two-layer LSTM in **PyTorch**, check it against simple baselines and turn its forecasts into drought alerts.
+
+::: {.callout-note}
+## Learning Objectives
+
+By the end of this session, you will be able to:
+
+1. **Retrieve** a monthly, cloud-masked Sentinel-2 NDVI time series for a province with Google Earth Engine
+2. **Create** supervised training samples with a sliding window (12 months in → 1 month out)
+3. **Split and scale** time series data without leakage (temporal train/validation/test split, scaler fitted on training data only)
+4. **Build and train** an LSTM in PyTorch with early stopping
+5. **Evaluate** forecasts with MAE and RMSE against persistence and seasonal baselines
+6. **Translate** forecasts into drought alerts and score them with precision and recall
+:::
+
+## Presentation Slides
+
+<iframe src="../presentations/session2_drought_lab.html" width="100%" height="600" style="border: 1px solid #ccc; border-radius: 4px;" title="Session 2 slides: LSTM drought monitoring lab"></iframe>
+
+---
+
+## Session Details
+
+::: {.session-info}
+**Duration:** 2.5 hours (150 minutes) | **Format:** Hands-on lab | **Difficulty:** Intermediate
+
+**Prerequisites:**
+
+- Session 1 (LSTM concepts, sliding windows)
+- Python and pandas basics
+- Optional: an Earth Engine account with a Google Cloud project registered for Earth Engine (free for non-commercial use)
+
+**What you'll build:**
+
+- Monthly NDVI series for two provinces (live or cached)
+- A PyTorch LSTM forecaster with early stopping
+- A comparison against persistence and seasonal-naive baselines
+- A drought-alert table with precision and recall
+:::
+
+::: {.callout-important}
+## Get Started with the Lab
+
+- 📓 [Student notebook](../notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb): guided parts with TODO cells ([open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day4/notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb))
+- 📓 [Instructor notebook](../notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb): worked solutions ([open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day4/notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb))
+- 📊 Cached data: `day4/data/mindanao_ndvi_sample.csv` (monthly mean NDVI, January 2018 to December 2023, two provinces). The notebook finds or downloads it automatically.
+
+**Requirements:** Google Colab (a CPU runtime is enough; training takes well under a minute) or a local Python 3.10+ environment with PyTorch 2.x, pandas, NumPy and matplotlib.
+
+**Why PyTorch?** Session 1 used TensorFlow/Keras. This lab builds the same LSTM design (64 → 32 units, dropout 0.2) in PyTorch so you see both major frameworks.
+:::
+
+---
+
+## Case Study: Mindanao Drought Monitoring
+
+### Why Bukidnon and South Cotabato?
+
+**Bukidnon** (about 10,500 km², largely an upland plateau) and **South Cotabato** (about 3,900 km²) are major agricultural provinces in Mindanao: corn, rice, pineapple, coffee, sugarcane and vegetables. Much of the farmland is rain-fed, so it is sensitive to rainfall deficits.
+
+**Climate challenges:**
+
+- El Niño episodes bring below-normal rainfall, dry spells and drought to Mindanao; the 2015-2016, 2019 and 2023-2024 events all caused crop losses
+- Mindanao's rainfall regime differs between provinces (PAGASA climate types III and IV), so "dry season" timing is local
+- Inter-annual variability makes fixed calendars unreliable
+
+::: {.callout-important}
+## Why forecasting matters
+
+Agencies such as the Department of Agriculture (DA) and PAGASA need **lead time** to act on drought: adjusting planting calendars, scheduling irrigation, positioning seed and crop insurance support, and issuing farm advisories. A forecast of next month's vegetation condition is one input to that decision; it does not replace PAGASA's climate outlooks or field reports.
+:::
+
+### Study area and data
+
+| Item | Lab setting |
+|---|---|
+| Areas | Rough bounding boxes around Bukidnon and South Cotabato (use official boundaries for real work) |
+| Sensor | Sentinel-2 surface reflectance, `COPERNICUS/S2_SR_HARMONIZED` in Earth Engine |
+| Cloud masking | Scene Classification Layer (SCL): keep vegetation, bare soil and water pixels |
+| Land mask | ESA WorldCover 2021 cropland (class 40) |
+| Aggregation | Monthly median composite → province mean NDVI |
+| Period | Cached sample: 2018-2023; live fetch default: 2019-2025 |
+
+---
+
+## Lab Workflow
+
+The student and instructor notebooks have the same 16 parts.
+
+### Parts 1-5: Setup and data (30 minutes)
+
+Imports, random seeds and device; an optional Earth Engine connection; study areas; the NDVI helper; data loading. Earth Engine is **off by default**, so the lab always works with the cached sample. To use live data:
+
+```python
+USE_EARTH_ENGINE = True
+EE_PROJECT = "your-cloud-project"     # a Cloud project registered for Earth Engine
+
+import ee
+ee.Authenticate()                     # once per user / runtime
+ee.Initialize(project=EE_PROJECT)
+```
+
+The helper `fetch_monthly_ndvi()` builds the monthly, cloud-masked, cropland-only NDVI series with one Earth Engine request per province and year. In the student notebook it is an optional stretch exercise; if it is not implemented or the request fails, the notebook falls back to the cached sample.
+
+### Parts 6-7: Exploration (20 minutes)
+
+Plot both provinces against an illustrative NDVI = 0.40 threshold and compute seasonal means and the lowest month per province. Discuss: which years dip lowest, and do the two provinces behave the same way?
+
+### Parts 8-10: Sequences, split and scaling (30 minutes)
+
+```python
+LOOKBACK, HORIZON = 12, 1   # 12 months in, next month out
+for idx in range(LOOKBACK, len(values) - HORIZON + 1):
+    history = values[idx - LOOKBACK:idx]
+    target = values[idx + HORIZON - 1]
+```
+
+- **Temporal split:** the last year is the test set, the year before is validation, everything earlier is training (cached sample: 72 / 24 / 24 samples)
+- **No leakage:** min-max scaling uses the training months only
+
+::: {.callout-warning}
+## Avoid data leakage
+
+Never shuffle a time series *before* splitting it, and never fit a scaler on the whole series. Both let the model "see" the test period and make results look better than they will be in operation.
+:::
+
+### Parts 11-13: PyTorch model and training (40 minutes)
+
+```python
+class NDVIForecaster(nn.Module):
+    def __init__(self, input_size=1, hidden_sizes=(64, 32), dropout=0.2):
+        super().__init__()
+        self.lstm1 = nn.LSTM(input_size, hidden_sizes[0], batch_first=True)
+        self.lstm2 = nn.LSTM(hidden_sizes[0], hidden_sizes[1], batch_first=True)
+        self.dropout = nn.Dropout(dropout)
+        self.head = nn.Sequential(nn.Linear(hidden_sizes[1], 16), nn.ReLU(), nn.Linear(16, 1))
+
+    def forward(self, x):
+        out, _ = self.lstm1(x)
+        out, _ = self.lstm2(self.dropout(out))
+        return self.head(self.dropout(out[:, -1, :]))   # last time step
+```
+
+Training uses Adam (learning rate 0.001), MSE loss, up to 150 epochs and early stopping on validation loss (patience 20), keeping the best weights.
+
+### Parts 14-16: Evaluation and alerts (30 minutes)
+
+- Learning curves (train vs validation MSE and MAE)
+- Test-year MAE and RMSE in NDVI units, compared with two baselines:
+  - **persistence:** next month = this month
+  - **seasonal naive:** next month = the same month last year
+- Drought alerts: NDVI < 0.40, confusion table, precision and recall
+
+::: {.callout-tip}
+## Read the baseline comparison carefully
+
+With only six years of monthly data (72 training samples on the cached sample), persistence is a strong baseline and the LSTM may only match it. That is a useful result: it shows how much data an LSTM needs and motivates pooling more locations, adding covariates, or using pre-trained features (Session 3).
+:::
+
+---
+
+## Exercises
+
+1. **Exploration (Part 6):** which months are lowest in each province? Do the 2019 values look different from other years?
+2. **Training (Part 13):** at which epoch did early stopping trigger? Do the learning curves show overfitting?
+3. **Evaluation (Part 15):** does the LSTM beat persistence? Where are the largest errors?
+4. **Alerts (Part 16):** how many drought months does the test year contain? What does that mean for precision and recall?
+5. **Stretch:** set `HORIZON = 3` and compare errors; or implement `fetch_monthly_ndvi()` and rerun with live data.
+
+---
+
+## Operational Deployment Considerations
+
+### From notebook to service
+
+1. **Data acquisition:** Sentinel-2 NDVI from Earth Engine or the [CopPhil Infrastructure](https://infra.copphil.philsa.gov.ph) (Copernicus mirror site hosted at PhilSA); rainfall and temperature from PAGASA; the ENSO index ([ONI](https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/ensostuff/ONI_v5.php)) from NOAA
+2. **Preprocessing:** cloud masking, monthly compositing, aggregation to municipality or province, cropland masking
+3. **Inference:** monthly forecasts for 1 and (with caution) 3 months ahead, ideally with uncertainty (ensembles or Monte Carlo dropout)
+4. **Alerting:** thresholds agreed with users, preferably on anomalies relative to each area's normal rather than a fixed NDVI value
+5. **Communication:** dashboards and advisories for DA, PAGASA and LGUs
+
+```python
+# Pseudo-code for a monthly forecasting job (functions are placeholders)
+def monthly_drought_forecast():
+    ndvi = fetch_latest_ndvi(region="Bukidnon", months=12)   # Earth Engine / CopPhil
+    X = scale(ndvi)[None, :, None]                            # (1, 12, 1)
+    forecast = invert(model(torch.tensor(X)).item())
+    if forecast < DROUGHT_THRESHOLD:
+        notify(["DA", "PAGASA", "LGUs"], f"Predicted NDVI {forecast:.2f} next month")
+    return forecast
+```
+
+### Model maintenance
+
+- Retrain at least yearly as new data arrives; monitor error against what actually happened
+- Version models, training data and thresholds; keep a rollback option
+- Collect qualitative feedback (did farmers and LGUs observe drought when the model said so?)
+
+---
+
+## Troubleshooting Guide
+
+**Overfitting (training loss ≪ validation loss):** increase dropout (0.3-0.4), reduce units (32/16), add weight decay to Adam, add more locations or years.
+
+**Loss not decreasing:** lower the learning rate (1e-4), check that scaling uses [0, 1], simplify the model.
+
+**Predictions lag one month behind the actual values:** the model has learned persistence. Add covariates (rainfall, ONI, soil moisture), predict anomalies instead of raw NDVI, or use a longer lookback.
+
+**Large errors at drought onset:** droughts are rare in a short record. Weight drought months more in the loss, add ENSO information, or combine with other models.
+
+**Earth Engine errors:** check that your Cloud project is registered for Earth Engine and passed to `ee.Initialize(project=...)`; reduce the period or increase `scale` if a request times out. The cached sample always works.
+
+---
+
+## Extensions
+
+- **Multivariate inputs:** rainfall, temperature, ONI, Sentinel-1 backscatter (`input_size > 1`)
+- **Multi-step forecasting:** `HORIZON = 3`, or sequence-to-sequence output
+- **Many locations:** municipalities or pixels instead of two province means; ConvLSTM for spatial fields
+- **Uncertainty:** Monte Carlo dropout or small ensembles
+- **Explainability:** Integrated Gradients with [Captum](https://captum.ai/) to see which past months drive a forecast (Session 3)
+
+---
+
+## Key Takeaways
+
+::: {.callout-important}
+## Session 2 Summary
+
+- A monthly, cloud-masked, cropland-only NDVI series is a practical starting point for drought forecasting
+- Sliding windows turn a time series into supervised samples; the split must be temporal and scaling must use training data only
+- The LSTM design from Session 1 carries over directly from Keras to PyTorch
+- Always compare against simple baselines; with short records they are hard to beat
+- Alerts need agreed thresholds and evaluation with precision and recall, and rare events make that evaluation uncertain
+:::
+
+---
+
+## Additional Resources
+
+**Lab materials:**
+
+- 📓 [Student notebook](../notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb) · 📓 [Instructor notebook](../notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb)
+
+**Further reading:**
+
+- AghaKouchak, A., et al. (2015). "Remote sensing of drought: Progress, challenges and opportunities." *Reviews of Geophysics*, 53(2).
+- Ndikumana, E., et al. (2018). "Deep Recurrent Neural Network for Agricultural Classification using multitemporal SAR Sentinel-1 for Camargue, France." *Remote Sensing*, 10(8).
+- [PyTorch `nn.LSTM` documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
+- [TensorFlow time series forecasting tutorial](https://www.tensorflow.org/tutorials/structured_data/time_series)
+
+**Data platforms:**
+
+- [Google Earth Engine](https://earthengine.google.com) · [Sentinel-2 SR Harmonized in the EE catalog](https://developers.google.com/earth-engine/datasets/catalog/COPERNICUS_S2_SR_HARMONIZED)
+- [CopPhil Infrastructure (Copernicus mirror site)](https://infra.copphil.philsa.gov.ph)
+- [PAGASA climate monitoring](https://www.pagasa.dost.gov.ph/climate/climate-monitoring) · [PAGASA El Niño / La Niña monitoring](https://www.pagasa.dost.gov.ph/climate/el-nino-la-nina/monitoring)
+
+---
+
+## Reflection
+
+1. How confident are you in building LSTM models for other EO time series problems?
+2. What Philippine applications could benefit from this kind of forecasting?
+3. How would you explain an NDVI forecast and its uncertainty to farmers or LGU officials?
+
+Questions: [dimitris@anefelo.com](mailto:dimitris@anefelo.com)
+
+---
+
+## Preparation for Session 3
+
+::: {.callout-tip}
+## Looking Ahead
+
+**Session 3: Emerging AI Trends in EO** covers geospatial foundation models, embedding datasets, on-board AI, self-supervised learning and explainable AI.
+
+**Relevance to this lab:**
+
+- Embedding datasets can supply land-cover masks and richer features for small-data problems like this one
+- Integrated Gradients can show which past months drive a drought forecast
+
+No advance preparation needed.
+
+[Session 3 →](session3.qmd){.btn .btn-outline-primary}
+:::
+
+---
+
+*This session is part of Day 4: Time Series Analysis, Emerging Trends, and Sustainable Learning - 4-Day Training on AI/ML for Earth Observation.*

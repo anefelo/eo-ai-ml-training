@@ -1,0 +1,1225 @@
+---
+title: "Session 3: Introduction to Deep Learning and CNNs"
+subtitle: "Neural Networks and Convolutional Architectures for Earth Observation"
+date: last-modified
+author: "Dimitrios Kasampalis"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+---
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="../../index.html">Home</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <a href="../index.html">Day 2</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <span class="breadcrumb-current">Session 3</span>
+</nav>
+
+::: {.hero}
+# Session 3: Introduction to Deep Learning and CNNs
+
+### Neural Networks and Convolutional Architectures for Earth Observation
+
+Transitioning from feature engineering to feature learning
+:::
+
+## Session Overview
+
+**Duration:** 2.5 hours | **Type:** Theory + Interactive Demonstrations | **Difficulty:** Intermediate
+
+---
+
+This pivotal session bridges traditional machine learning (Sessions 1-2) and modern deep learning approaches. You'll understand the fundamental shift from manual feature engineering to automatic feature learning through neural networks, with specific focus on Convolutional Neural Networks (CNNs) for Earth observation applications.
+
+## Presentation Slides
+
+<iframe src="../presentations/session3_deep_learning.html" width="100%" height="600" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+
+---
+
+::: {.callout-important}
+## Prerequisites
+
+- ✓ Complete Sessions 1-2 (Random Forest classification)
+- ✓ Understanding of classification concepts (accuracy, confusion matrix)
+- ✓ Basic Python and NumPy familiarity
+- ✓ Colab environment with GPU runtime enabled
+- ✓ Conceptual understanding of matrix operations
+:::
+
+---
+
+## What You'll Learn
+
+After completing this session, you will be able to:
+
+1. **Understand the ML → DL Transition**
+   - Recognize when to use traditional ML vs deep learning
+   - Explain the automatic feature learning paradigm
+   - Identify computational requirements and trade-offs
+   - Understand data requirements for deep learning success
+
+2. **Master Neural Network Fundamentals**
+   - Build simple perceptrons from scratch using NumPy
+   - Implement activation functions (ReLU, sigmoid, softmax)
+   - Understand forward propagation and backpropagation
+   - Visualize decision boundaries and learning dynamics
+
+3. **Comprehend Convolutional Neural Networks**
+   - Explain convolution operations and their purpose
+   - Understand pooling, padding, and stride concepts
+   - Visualize filter responses on satellite imagery
+   - Compare CNN architectures (LeNet, VGG, ResNet, U-Net)
+
+4. **Apply CNNs to Earth Observation Tasks**
+   - Identify appropriate CNN architectures for EO problems
+   - Understand scene classification vs semantic segmentation
+   - Recognize object detection and change detection approaches
+   - Connect CNN capabilities to Philippine EO applications
+
+5. **Navigate Practical Considerations**
+   - Address data-centric AI principles for EO
+   - Handle limited training data scenarios
+   - Understand transfer learning and pre-trained models
+   - Recognize computational constraints and optimization strategies
+
+---
+
+## Session Structure
+
+### Part A: From Machine Learning to Deep Learning (15 minutes)
+
+Understanding the paradigm shift from manual to automatic feature learning.
+
+::: {.feature-grid}
+::: {.feature-card}
+**🔧 Traditional ML (Sessions 1-2)**
+
+**What you did:**
+- Manually calculated NDVI, NDWI, NDBI
+- Engineered GLCM texture features
+- Extracted temporal statistics
+- Combined features thoughtfully
+
+**Pros:** Interpretable, works with small datasets
+**Cons:** Requires domain expertise, limited by imagination
+:::
+
+::: {.feature-card}
+**🧠 Deep Learning (Sessions 3-4)**
+
+**What CNNs do:**
+- Learn features automatically from raw pixels
+- Discover hidden patterns humans miss
+- Build hierarchical representations
+- Optimize end-to-end
+
+**Pros:** No feature engineering, state-of-the-art accuracy
+**Cons:** Needs large datasets, computationally intensive
+:::
+
+::: {.feature-card}
+**⚖️ When to Use Which?**
+
+**Use Random Forest when:**
+- Limited training data (<1000 samples)
+- Need interpretability (DENR reports)
+- Have domain features (indices)
+- Fast prototyping needed
+
+**Use CNNs when:**
+- Large labeled datasets (>10,000 samples)
+- Complex spatial patterns
+- Maximum accuracy required
+- GPU resources available
+:::
+
+::: {.feature-card}
+**🇵🇭 Philippine EO Context**
+
+**Typical applications:**
+- Scene classification (land cover)
+- Cloud detection (Sentinel-2)
+- Building footprint extraction
+- Flood extent mapping
+
+**Why CNNs?**
+Handle complex tropical landscapes, monsoon cloud patterns, informal settlements
+:::
+:::
+
+**Key Insight:**
+*"In Sessions 1-2, you manually engineered features. CNNs will learn these features automatically—and discover new ones you never imagined!"*
+
+### Part B: Neural Network Fundamentals (25 minutes)
+
+Building intuition from the ground up using interactive Jupyter notebooks.
+
+#### B.1: The Perceptron - Simplest Neural Unit
+
+Understanding the building block of all neural networks.
+
+**Mathematical Foundation:**
+$$
+y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
+$$
+
+Where:
+- $x_i$: Input features (e.g., pixel values, NDVI)
+- $w_i$: Learned weights
+- $b$: Bias term
+- $f$: Activation function
+- $y$: Output prediction
+
+**Hands-On:** Build a perceptron from scratch to classify "Forest vs Non-Forest" from NDVI and a texture feature (synthetic data).
+
+```python
+# Simple perceptron implementation
+class Perceptron:
+    def __init__(self, input_dim):
+        self.weights = np.random.randn(input_dim)
+        self.bias = 0
+
+    def predict(self, X):
+        linear_output = np.dot(X, self.weights) + self.bias
+        return self.activation(linear_output)
+
+    def activation(self, z):
+        return 1 if z > 0 else 0  # Step function
+```
+
+#### B.2: Activation Functions - Adding Non-Linearity
+
+Why neural networks need activation functions to solve complex problems.
+
+::: {.feature-grid}
+::: {.feature-card}
+**Sigmoid**
+$$\sigma(z) = \frac{1}{1 + e^{-z}}$$
+
+**Range:** (0, 1)
+**Use:** Binary classification output
+**EO Example:** Cloud probability
+:::
+
+::: {.feature-card}
+**ReLU (Rectified Linear Unit)**
+$$\text{ReLU}(z) = \max(0, z)$$
+
+**Range:** [0, ∞)
+**Use:** Hidden layers (most popular)
+**Why:** Fast, sparse activation
+:::
+
+::: {.feature-card}
+**Softmax**
+$$\text{softmax}(z_i) = \frac{e^{z_i}}{\sum_j e^{z_j}}$$
+
+**Range:** (0, 1), sums to 1
+**Use:** Multi-class classification
+**EO Example:** Land cover classes
+:::
+
+::: {.feature-card}
+**Tanh**
+$$\tanh(z) = \frac{e^z - e^{-z}}{e^z + e^{-z}}$$
+
+**Range:** (-1, 1)
+**Use:** When centered data needed
+**Note:** Less common than ReLU
+:::
+:::
+
+**Interactive Demo:** Visualize how each activation function transforms Sentinel-2 spectral values.
+
+#### B.3: Multi-Layer Networks - Learning Complex Patterns
+
+Stacking layers to learn hierarchical representations.
+
+**Architecture:**
+```
+Input Layer (e.g., Sentinel-2 bands)
+    ↓
+Hidden Layer 1 (64 neurons, ReLU)
+    ↓
+Hidden Layer 2 (32 neurons, ReLU)
+    ↓
+Output Layer (8 classes, Softmax)
+```
+
+**What Each Layer Learns:**
+- **Layer 1:** Low-level features (edges, textures)
+- **Layer 2:** Mid-level features (shapes, patterns)
+- **Layer 3:** High-level features (objects, scenes)
+- **Output:** Class probabilities
+
+**Hands-On:** Train a 2-layer network on the same forest/non-forest data and compare its decision boundary with the perceptron's.
+
+#### B.4: Training Process - Learning from Data
+
+Understanding gradient descent and backpropagation intuitively.
+
+**Training Loop:**
+1. **Forward Pass:** Input → Hidden → Output → Prediction
+2. **Calculate Loss:** Compare prediction to true label
+3. **Backward Pass:** Compute gradients (how much each weight contributed to error)
+4. **Update Weights:** $w_{new} = w_{old} - \alpha \cdot \frac{\partial L}{\partial w}$
+5. **Repeat:** Until loss converges
+
+**Key Hyperparameters:**
+- **Learning Rate ($\alpha$):** Step size for weight updates (0.001 - 0.1)
+- **Batch Size:** Number of samples per gradient update (32, 64, 128)
+- **Epochs:** Complete passes through training data (10-100)
+
+**Interactive Exploration:** Experiment with learning rates to see overfitting vs underfitting.
+
+### Part C: Convolutional Neural Networks (30 minutes)
+
+Deep dive into the architecture that revolutionized computer vision and Earth observation.
+
+#### C.1: Why CNNs for Images?
+
+**Problem with Regular Neural Networks:**
+- A 10m Sentinel-2 image chip (256×256×10 bands) = 655,360 parameters just for first layer!
+- No spatial awareness (treats nearby pixels same as distant ones)
+- Computationally infeasible
+
+**CNN Solutions:**
+- **Local Connectivity:** Each neuron connects to small spatial region
+- **Parameter Sharing:** Same filter applied across entire image
+- **Translation Invariance:** Detect features anywhere in image
+
+**Result:** Millions fewer parameters, spatially-aware learning!
+
+#### C.2: Convolution Operation - The Heart of CNNs
+
+Understanding how convolutions extract features from satellite imagery.
+
+**Mathematical Definition:**
+$$
+(I * K)(i,j) = \sum_{m}\sum_{n} I(i+m, j+n) \cdot K(m,n)
+$$
+
+Where:
+- $I$: Input image (e.g., Sentinel-2 NIR band)
+- $K$: Filter/kernel (e.g., 3×3 edge detector)
+- $*$: Convolution operator
+
+**Visual Example:**
+
+```
+Sentinel-2 NIR Image (5×5)    Edge Detection Filter (3×3)
+┌─────────────────┐           ┌─────────┐
+│ 120 115 118 122 │           │ -1  -1  -1 │
+│ 118 245 242 125 │     *     │  0   0   0 │
+│ 119 248 244 121 │           │  1   1   1 │
+│ 121 116 119 123 │           └─────────┘
+└─────────────────┘
+                ↓
+    Feature Map (detects water edges)
+```
+
+**Hands-On:**
+- Apply manual convolutions to Sentinel-2 patches
+- Visualize classic filters (edge detection, blur, sharpen)
+- See how filters respond to forests, water, urban areas
+
+#### C.3: CNN Building Blocks
+
+**1. Convolutional Layer**
+- Applies multiple filters to input
+- Each filter learns to detect different feature
+- Output: Feature maps (activations)
+
+**Parameters:**
+- `filters`: Number of filters (32, 64, 128...)
+- `kernel_size`: Filter dimensions (3×3, 5×5)
+- `stride`: Step size for filter movement (usually 1)
+- `padding`: Border handling ('same' or 'valid')
+
+**2. Pooling Layer**
+- Reduces spatial dimensions (downsampling)
+- Provides translation invariance
+- Most common: Max pooling
+
+**Max Pooling (2×2):**
+```
+Input (4×4)                Output (2×2)
+┌────────────┐            ┌──────┐
+│ 1  3  2  4 │            │ 3  4 │
+│ 2  3  1  2 │    →       │ 7  9 │
+│ 5  7  8  9 │            └──────┘
+│ 1  2  3  4 │
+└────────────┘
+Takes maximum in each 2×2 window
+```
+
+**3. Fully Connected Layer**
+- Traditional neural network layer
+- Connects all features to output classes
+- Usually at end of network
+
+**4. Dropout Layer**
+- Randomly deactivates neurons during training
+- Prevents overfitting
+- Common rate: 0.3-0.5
+
+#### C.4: Classic CNN Architectures
+
+Understanding architectures used in EO applications.
+
+::: {.feature-grid}
+::: {.feature-card}
+**LeNet-5 (1998)**
+
+**Structure:**
+- Conv → Pool → Conv → Pool → FC
+- 60K parameters
+- Original: Handwritten digits
+
+**EO Use:**
+- Simple scene classification
+- Educational examples
+- Quick prototypes
+:::
+
+::: {.feature-card}
+**VGG-16 (2014)**
+
+**Structure:**
+- 13 Conv layers + 3 FC
+- 138M parameters
+- Small 3×3 filters stacked
+
+**EO Use:**
+- Scene classification
+- Pre-trained on ImageNet
+- Transfer learning baseline
+:::
+
+::: {.feature-card}
+**ResNet-50 (2015)**
+
+**Innovation:**
+- Skip connections (residual blocks)
+- Solves vanishing gradient
+- 50 layers deep
+
+**EO Use:**
+- High-accuracy classification
+- Feature extraction
+- Backbone for transfer learning (Session 4)
+:::
+
+::: {.feature-card}
+**U-Net (2015)**
+
+**Innovation:**
+- Encoder-decoder architecture
+- Skip connections preserve detail
+- Outputs same-size segmentation
+
+**EO Use:**
+- Semantic segmentation
+- Flood mapping
+- Building extraction
+- **Day 3 focus!**
+:::
+:::
+
+**Interactive Visualization:** Explore how different architectures process Sentinel-2 imagery.
+
+### Part D: CNNs for Earth Observation (25 minutes)
+
+Connecting CNN capabilities to Philippine EO operational needs.
+
+#### D.1: Scene Classification
+
+**Task:** Assign single label to entire image patch
+
+**Architecture:** ResNet, VGG, EfficientNet (classification head)
+
+**Philippine Applications:**
+
+| Application | Classes | Dataset | Stakeholder |
+|-------------|---------|---------|-------------|
+| **Land Cover** | Forest, Urban, Agriculture, Water, Bare | Sentinel-2 | DENR, LGUs |
+| **Cloud Detection** | Clear, Thin Cloud, Thick Cloud, Shadow | Sentinel-2 Level-1C | Image pre-processing chains |
+| **Rice Field Stage** | Land Prep, Transplanting, Vegetative, Harvest | PlanetScope + field data | DA, PhilRice |
+| **Disaster Assessment** | Damaged, Undamaged, Debris | Drones + Sentinel-2 | NDRRMC, PAGASA |
+
+**Data Requirements:**
+- Typical: 1,000-10,000 labeled image chips per class
+- Practical start: a few hundred chips per class, rotations/flips, and transfer learning
+
+**Hands-On (Session 4):** Build a CNN from scratch and a ResNet50 transfer-learning classifier on EuroSAT
+
+#### D.2: Semantic Segmentation
+
+**Task:** Classify every pixel in image (pixel-wise labels)
+
+**Architecture:** U-Net, DeepLabv3+, SegNet
+
+**Philippine Applications:**
+
+::: {.feature-grid}
+::: {.feature-card}
+**🌊 Flood Mapping**
+
+**Challenge:**
+Rapid post-disaster assessment
+
+**CNN Solution:**
+- Input: Sentinel-1 SAR (pre + post event)
+- Output: Flooded/Non-flooded pixel map
+- Architecture: U-Net
+
+**Why SAR:**
+Sentinel-1 sees through clouds, so flood maps can be made during typhoons when optical images are unusable
+:::
+
+::: {.feature-card}
+**🏘️ Informal Settlements**
+
+**Challenge:**
+Map slums for disaster planning
+
+**CNN Solution:**
+- Input: High-res imagery (PlanetScope, drones)
+- Output: Building footprints
+- Architecture: U-Net + post-processing
+
+**Possible use:**
+Urban vulnerability assessment (e.g. Metro Manila)
+:::
+
+::: {.feature-card}
+**🌳 Forest Degradation**
+
+**Challenge:**
+Detect selective logging
+
+**CNN Solution:**
+- Input: Multi-temporal Sentinel-2
+- Output: Degraded forest pixels
+- Architecture: U-Net + LSTM
+
+**Possible use:**
+Protected area monitoring
+:::
+
+::: {.feature-card}
+**⛏️ Mining Activity**
+
+**Challenge:**
+Illegal mining detection
+
+**CNN Solution:**
+- Input: Sentinel-2 + Sentinel-1
+- Output: Mining site polygons
+- Post-process: Vectorize
+
+**Possible use:**
+Mining permit compliance monitoring
+:::
+:::
+
+**Data Requirements:**
+- Annotation intensive: Need pixel-level labels
+- Typical: 100-500 labeled images (256×256 chips)
+- Tools: QGIS, LabelMe, CVAT
+
+**Hands-On (Day 3):** U-Net flood mapping with Sentinel-1 SAR
+
+#### D.3: Object Detection
+
+**Task:** Find and localize objects with bounding boxes
+
+**Architecture:** Faster R-CNN, YOLO, RetinaNet
+
+**Philippine Applications:**
+- **Ship Detection:** Illegal fishing monitoring (Sentinel-1)
+- **Building Detection:** Infrastructure mapping (high-res)
+- **Tree Counting:** Forest inventory (drone imagery)
+- **Vehicle Detection:** Traffic monitoring (PlanetScope)
+
+**Data Format:** Bounding boxes + class labels (COCO, PASCAL VOC formats)
+
+**Computational Note:** More complex than classification, requires anchor boxes and region proposals
+
+#### D.4: Change Detection
+
+**Task:** Identify what changed between two time points
+
+**CNN Approaches:**
+
+1. **Siamese Networks:** Compare two images with shared weights
+2. **Early Fusion:** Stack temporal images as input channels
+3. **Late Fusion:** Separate encoders + change decoder
+
+**Philippine Applications:**
+- Deforestation (Palawan, Mindanao)
+- Urban expansion (Metro Manila, Cebu)
+- Post-disaster damage (typhoon impacts)
+- Agricultural change (conversion detection)
+
+**Challenge:** Need paired labeled change data (before + after + change mask)
+
+### Part E: Practical Considerations for EO Deep Learning (15 minutes)
+
+Real-world challenges and solutions for Philippine EO practitioners.
+
+#### E.1: The Data Challenge
+
+**How Much Data Do You Need?**
+
+| Model Complexity | Typical Requirement | Philippine Reality |
+|------------------|---------------------|-------------------|
+| Simple CNN (5 layers) | 5,000-10,000 samples | ✓ Achievable |
+| ResNet-50 (from scratch) | 100,000+ samples | ✗ Rarely available |
+| ResNet-50 (fine-tuned) | 1,000-5,000 samples | ✓ Achievable with augmentation |
+| U-Net (segmentation) | 100-500 images | ✓ Achievable but labor-intensive |
+
+**Data-Centric AI Principles:**
+1. **Quality > Quantity:** 500 clean labels >> 5,000 noisy labels
+2. **Representative Sampling:** Cover all Philippine ecosystems (lowland, upland, coastal)
+3. **Class Balance:** Equal samples per class (or weighted loss)
+4. **Validation Split:** Hold out 20% for unbiased evaluation
+
+**Philippine Data Sources:**
+- PhilSA (satellite data services)
+- NAMRIA / Geoportal Philippines (reference maps)
+- DOST-ASTI (rapid-mapping and disaster products)
+- Phil-LiDAR archives (elevation + canopy)
+- Field campaigns (GPS + photos)
+- Global open labels: ESA WorldCover, Hansen Global Forest Change, EuroSAT
+
+#### E.2: Transfer Learning - Training on Limited Data
+
+**Strategy:** Start with model pre-trained on large dataset (ImageNet), fine-tune on Philippine data
+
+**Benefits:**
+- Need 10× less data
+- Train 5× faster
+- Better accuracy with small datasets
+
+**Implementation:**
+```python
+# Load pre-trained ResNet
+base_model = ResNet50(weights='imagenet', include_top=False)
+
+# Freeze early layers (keep learned features)
+for layer in base_model.layers[:100]:
+    layer.trainable = False
+
+# Add custom classification head
+x = GlobalAveragePooling2D()(base_model.output)
+x = Dense(128, activation='relu')(x)
+output = Dense(8, activation='softmax')(x)  # 8 Palawan classes
+
+model = Model(inputs=base_model.input, outputs=output)
+```
+
+**When to Use:**
+- Limited training data (<5,000 samples)
+- Similar task to pre-training (natural images)
+- Need quick results
+
+**Caution:** ImageNet has RGB images. Sentinel-2 has 10+ bands. Adaptation strategies needed (Session 4).
+
+#### E.3: Data Augmentation - Artificially Expanding Training Data
+
+**Geometric Transformations:**
+- **Rotation:** 90°, 180°, 270° (satellites view from any angle)
+- **Horizontal/Vertical Flip:** Valid for overhead imagery
+- **Zoom/Scale:** Simulate different resolutions
+- **Translation:** Small shifts
+
+**Spectral Augmentations:**
+- **Brightness/Contrast:** Simulate atmospheric conditions
+- **Gaussian Noise:** Simulate sensor noise
+- **Band Dropout:** Improve robustness
+
+**Philippine Context:**
+- ✓ Use rotation/flips for land cover (no preferential orientation)
+- ✗ Avoid rotation for infrastructure (roads have direction)
+- ✓ Augment brightness for cloud variations
+
+**Implementation (Session 4)** — Keras 3 preprocessing layers (`ImageDataGenerator` is deprecated):
+```python
+from tensorflow import keras
+from tensorflow.keras import layers
+
+augmentation = keras.Sequential([
+    layers.RandomFlip("horizontal_and_vertical"),
+    layers.RandomRotation(0.25),                       # up to ±90°
+    layers.RandomBrightness(0.1, value_range=(0, 1)),  # images scaled to [0, 1]
+    layers.RandomZoom(0.1),
+])
+```
+
+#### E.4: Computational Requirements
+
+**Training Resources:**
+
+| Model | Indicative training time* | GPU memory | Colab free tier? |
+|-------|---------------------------|------------|------------------|
+| Small CNN (Session 4, EuroSAT) | 5–15 min | < 4 GB | Yes |
+| ResNet-50 fine-tuning (EuroSAT, 224 px) | 15–45 min | ~8 GB | Yes |
+| U-Net segmentation (Day 3) | 30 min – several hours | 8–16 GB | Usually |
+| ResNet-50 from scratch (large dataset) | Days | 16 GB+ | No |
+
+*Order-of-magnitude figures on a single Colab-class GPU (e.g. T4); they depend on image size, epochs and data pipeline.
+
+**Philippine Context:**
+- Universities and agencies may have shared GPU servers — ask your IT/research office
+- Practitioners: free Colab GPUs are enough for this course; paid tiers or cloud GPUs for longer jobs
+
+**Optimization Strategies (Session 4):**
+- Use mixed precision training (FP16)
+- Reduce batch size if memory limited
+- Train on smaller image chips (128×128 instead of 256×256)
+- Use gradient checkpointing for large models
+
+#### E.5: Model Interpretability - Understanding CNN Decisions
+
+**Why It Matters:**
+- DENR reports need explanations ("Why was this classified as deforested?")
+- Debugging poor performance
+- Building stakeholder trust
+
+**Techniques (Session 4):**
+1. **Activation Visualization:** See what filters learned
+2. **Saliency Maps:** Which pixels influenced decision?
+3. **Class Activation Maps (CAM):** Highlight relevant regions
+4. **Filter Visualization:** What patterns do filters detect?
+
+**Philippine Application Example:**
+- **Question:** Why did model classify mangroves as agriculture?
+- **CAM Analysis:** Model focused on water proximity, not canopy structure
+- **Solution:** Add texture features or more mangrove training samples
+
+---
+
+## Key Concepts
+
+### Automatic Feature Learning
+
+**What is it?**
+CNNs learn optimal features directly from raw pixel data, eliminating manual feature engineering.
+
+**How it works:**
+- **Layer 1:** Learns edges (horizontal, vertical, diagonal) - like Sobel filters you created manually
+- **Layer 2:** Combines edges into textures and simple shapes
+- **Layer 3:** Combines shapes into complex patterns (canopy structure, urban grid)
+- **Layer 4+:** High-level semantic features (forest type, settlement pattern)
+
+**Comparison to Session 2:**
+
+| Aspect | Random Forest (Session 2) | CNN (Session 3-4) |
+|--------|---------------------------|-------------------|
+| **Features** | Manual (NDVI, GLCM) | Learned automatically |
+| **Spatial Context** | Limited (within feature) | Fully exploited (receptive field) |
+| **Data Needed** | 500-1,000 samples | 5,000-10,000 samples |
+| **Training Time** | Minutes | Hours |
+| **Accuracy** | 80-85% typical | 90-95% possible |
+
+### Receptive Field
+
+**Definition:** The region of input image that influences a particular neuron's activation.
+
+**Example:**
+- A neuron in Layer 1 sees a 3×3 pixel region (30m × 30m for Sentinel-2)
+- A neuron in Layer 3 sees a 15×15 pixel region (150m × 150m)
+- Output neuron "sees" entire image chip
+
+**Why it matters:**
+- Small objects (buildings): Need fewer layers
+- Large objects (agricultural fields): Need deeper networks
+- Contextual classification: Large receptive field captures neighborhood
+
+**Philippine Example:**
+Classifying a pixel as "mangrove" requires seeing water proximity (large receptive field) AND canopy texture (small receptive field). Multi-scale processing essential!
+
+### Translation Invariance
+
+**What is it?**
+CNN can recognize patterns regardless of position in image.
+
+**How achieved:**
+1. **Parameter sharing:** Same filter applied everywhere
+2. **Pooling:** Abstracts exact position
+
+**EO Benefit:**
+Forest is forest whether in top-left or bottom-right of image. Train once, apply anywhere in Philippines!
+
+**Contrast with Position:**
+For some tasks, position DOES matter (e.g., urban always near coasts in Philippines). Advanced architectures can encode position.
+
+### Gradient Descent and Backpropagation
+
+**Intuitive Explanation:**
+
+Imagine hiking down a foggy mountain (error surface) to reach valley (minimum loss):
+- **Gradient:** Direction of steepest descent
+- **Learning rate:** Step size
+- **Backpropagation:** Efficiently calculates gradients for all weights
+
+**Training Process:**
+1. Forward pass: Image → Predictions
+2. Calculate loss: How wrong were predictions?
+3. Backward pass: Compute ∂Loss/∂Weight for every parameter
+4. Update weights: Move "downhill" toward better performance
+
+**Common Issues:**
+- **Learning rate too high:** Jump over minimum (unstable)
+- **Learning rate too low:** Painfully slow convergence
+- **Local minima:** Stuck in suboptimal solution (less common with large networks)
+
+**Session 4:** uses the Adam optimizer (adaptive learning rates)
+
+---
+
+## Interactive Demonstrations
+
+All demos are in one notebook, [`session3_theory_interactive.ipynb`](../notebooks/session3_theory_interactive.ipynb), and use synthetic data so they run anywhere.
+
+### Demo 1: Perceptron Playground (Part 1)
+
+**Activity:** generate a forest/non-forest dataset (NDVI + texture), train a perceptron from scratch, and watch the error fall and the linear decision boundary settle.
+
+**Expected Outcome:** understand that a neuron is a weighted sum + activation, trained by gradient descent.
+
+### Demo 2: Activation Function Gallery (Part 2)
+
+**Activity:** plot sigmoid, ReLU, tanh and Leaky ReLU and their derivatives.
+
+**Key Insight:** ReLU is simple, fast and does not saturate for positive inputs, which limits vanishing gradients.
+
+### Demo 3: A Small Neural Network (Part 3)
+
+**Activity:** train a 2-4-1 network with hand-written backpropagation and compare its decision boundary with the perceptron.
+
+### Demo 4: Manual Convolution (Part 4)
+
+**Activity:** implement 2D convolution in NumPy and apply edge, Sobel, sharpen and blur filters to a synthetic Sentinel-2-like NIR band.
+
+**Aha Moment:** "Edge filters highlight land cover boundaries — CNNs learn filters like these automatically."
+
+### Demo 5: CNN Architecture Exploration (Part 5)
+
+**Activity:** trace tensor shapes and count parameters through a small CNN for 64×64×10 Sentinel-2 patches; compare RF and CNN trade-offs.
+
+**Connection to Session 4:** choose an architecture by task (classification → CNN/ResNet; segmentation → U-Net on Day 3).
+
+---
+
+## Philippine EO Applications
+
+Where CNNs fit in Philippine EO work (illustrative use cases, not descriptions of specific agency systems):
+
+1. **Cloud masking** of Sentinel-2 for faster mosaicking in a persistently cloudy climate
+2. **Land cover and forest monitoring** — scene or pixel classification to support DENR reporting, protected area monitoring and REDD+ MRV
+3. **Disaster rapid mapping** — Sentinel-1 flood extent (U-Net, Day 3) and building damage from very-high-resolution imagery (object detection)
+4. **Local government planning** — fine-tuning a pre-trained model on a few hundred local labels (Session 4 workflow) for municipal land use monitoring
+
+**Typical pipeline:**
+```
+Sentinel-2 / Sentinel-1 → Pre-processing (cloud mask, calibration) →
+CNN inference → Change detection → Alerts → Field validation
+```
+
+**Accessible tools:** Google Earth Engine for data preparation, Colab for GPU training, and Philippine data services (PhilSA, DOST-ASTI, NAMRIA) for local imagery and reference data.
+
+---
+
+## Expected Outcomes
+
+### Conceptual Understanding
+
+By the end of Session 3, you should be able to:
+
+✅ **Explain to a colleague** why CNNs are better than Random Forest for complex spatial patterns
+✅ **Sketch** a simple CNN architecture and label components (Conv, Pool, FC)
+✅ **Describe** what happens during forward and backward propagation
+✅ **Identify** appropriate architectures for classification vs segmentation
+✅ **Discuss** data requirements and computational constraints
+
+### Technical Skills
+
+✅ **Build** a simple perceptron from scratch using NumPy
+✅ **Implement** activation functions and visualize their behavior
+✅ **Perform** manual convolution on satellite imagery
+✅ **Apply** classic edge detection filters (Sobel, Gaussian)
+✅ **Visualize** feature maps and pooling operations
+
+### Practical Readiness for Session 4
+
+✅ **Understand** why we'll use TensorFlow/Keras (vs building from scratch)
+✅ **Anticipate** challenges with Sentinel-2 multi-band data
+✅ **Recognize** data preparation needs (chips, labels, augmentation)
+✅ **Set expectations** for training time and resource requirements
+
+---
+
+## Hands-On Notebook
+
+### Access the Interactive Materials
+
+::: {.callout-tip}
+## 📓 Jupyter Notebook (Theory + Interactive)
+
+[`session3_theory_interactive.ipynb`](../notebooks/session3_theory_interactive.ipynb) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session3_theory_interactive.ipynb)
+
+**Contents (about 90 minutes):**
+
+- Part 1: Build a perceptron from scratch
+- Part 2: Activation functions and their gradients
+- Part 3: A 2-layer neural network with backpropagation
+- Part 4: Manual convolution and classic filters on a Sentinel-2-like band
+- Part 5: CNN shapes, parameter counts, and RF vs CNN
+- Exercises with expected outputs (learning rate, custom filters, parameter counting)
+
+Runs on CPU; no data download or Earth Engine account needed.
+:::
+
+### Supporting Documentation
+
+::: {.callout-note}
+## 📚 Reference Materials
+
+**CNN Architectures Deep Dive:**
+[`Cheatsheets & References`](../../resources/cheatsheets.qmd)
+
+Detailed explanations of LeNet-5, VGG-16, ResNet-50, U-Net, and modern variants (EfficientNet, Vision Transformers). Includes architecture diagrams, parameter counts, and EO applications.
+
+---
+
+**EO Applications Guide:**
+[`Glossary & EO Resources`](../../resources/glossary.qmd)
+
+Comprehensive guide to CNN applications in Earth observation:
+- Scene classification examples
+- Semantic segmentation workflows
+- Object detection case studies
+- Change detection methods
+- Philippine-specific use cases
+
+---
+
+**Session Overview:**
+[`Day 2 Overview`](../index.qmd)
+
+Quick reference with session objectives, structure, and prerequisites.
+:::
+
+---
+
+## Troubleshooting
+
+### Common Conceptual Questions
+
+**"Why does CNN need so much more data than Random Forest?"**
+
+Random Forest learns from features YOU engineered (NDVI, GLCM). It needs to learn relationships between ~10-20 features.
+
+CNNs learn from raw pixels (~10,000 per image chip). It needs to learn what features to extract PLUS how to classify. Much harder optimization problem = more data needed.
+
+**Mitigation:** Transfer learning (Session 4) dramatically reduces data needs.
+
+---
+
+**"Can I use CNNs with small datasets (<500 samples)?"**
+
+Technically yes, but results will be poor if training from scratch.
+
+**Better approach:**
+1. Use pre-trained models (ImageNet weights)
+2. Aggressive data augmentation
+3. Use simpler architectures (fewer layers)
+4. Consider traditional ML if data is truly limited
+
+---
+
+**"Why are my manual convolutions so slow in the notebook?"**
+
+NumPy convolutions (for learning) are intentionally simple. Production CNNs use highly optimized libraries (cuDNN) on GPUs—1000× faster!
+
+Session 4 uses TensorFlow/Keras with GPU acceleration.
+
+---
+
+**"How do I know which architecture to use?"**
+
+**Simple decision tree:**
+- **Classification task** (one label per image) → ResNet, EfficientNet
+- **Segmentation task** (label every pixel) → U-Net, DeepLabv3+
+- **Object detection** (find + localize) → YOLO, Faster R-CNN
+- **Limited data** → Simpler architecture + transfer learning
+- **Real-time inference needed** → MobileNet, EfficientNet-Lite
+
+Session 4 uses a custom CNN and ResNet50 (classification); Day 3 covers U-Net (segmentation).
+
+---
+
+### Technical Issues
+
+**"Notebook cells won't execute in Colab"**
+
+1. Check GPU is enabled: Runtime → Change runtime type → GPU
+2. Restart runtime: Runtime → Restart runtime
+3. Verify installations: `!pip list | grep numpy`
+
+---
+
+**"Out of memory error when running convolutions"**
+
+- Use smaller image chips (128×128 instead of 256×256)
+- Process one image at a time (don't load entire dataset)
+- Restart Colab runtime to clear memory
+
+---
+
+**"Visualizations aren't displaying"**
+
+```python
+# Add to beginning of notebook
+%matplotlib inline
+import matplotlib.pyplot as plt
+plt.rcParams['figure.figsize'] = (10, 10)
+```
+
+---
+
+**"Can't access Sentinel-2 data in notebook"**
+
+Session 3 uses synthetic images generated inside the notebook — no data access or GEE authentication needed.
+
+Session 4 downloads the EuroSAT benchmark through TensorFlow Datasets.
+
+---
+
+### Getting Help
+
+- 📖 [CNN tutorial (TensorFlow)](https://www.tensorflow.org/tutorials/images/cnn)
+- 📖 [CS231n Stanford Course](http://cs231n.stanford.edu/) - Best CNN educational resource
+- 💬 [Email the instructor](mailto:dimitris@anefelo.com)
+
+---
+
+## Additional Resources
+
+### Foundational Learning
+
+**Neural Networks:**
+- [3Blue1Brown Neural Network Series](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) - Best intuitive explanation (visual)
+- [Neural Networks and Deep Learning (Free Book)](http://neuralnetworksanddeeplearning.com/)
+- [Andrew Ng's Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning) (Coursera)
+
+**CNNs Specifically:**
+- [Stanford CS231n Lectures](http://cs231n.stanford.edu/schedule.html) - Comprehensive (free)
+- [CNN Explainer (Interactive)](https://poloclub.github.io/cnn-explainer/) - Visualize CNNs in browser
+- [Distill.pub Articles](https://distill.pub/) - Beautiful visual explanations
+
+### Earth Observation Deep Learning
+
+**Papers:**
+- Zhu et al. (2017). "Deep Learning in Remote Sensing: A Review." *IEEE GRSM*
+- Ma et al. (2019). "Deep learning in remote sensing applications: A meta-analysis and review." *ISPRS*
+- Rußwurm & Körner (2020). "Self-attention for raw optical satellite time series classification." *ISPRS*
+
+**Tutorials:**
+- [EO College](https://eo-college.org) - Free Earth observation courses
+- [Raster Vision](https://rastervision.io/) - Framework for geospatial ML
+- [TorchGeo](https://torchgeo.readthedocs.io/) - PyTorch library for geospatial data
+
+**Datasets:**
+- [EuroSAT](https://github.com/phelber/EuroSAT) - Sentinel-2 scene classification (10 classes)
+- [UC Merced Land Use](https://www.tensorflow.org/datasets/catalog/uc_merced) - High-res classification (via TensorFlow Datasets)
+- [DeepGlobe](http://deepglobe.org/) - Segmentation challenges
+- [SpaceNet](https://spacenet.ai/) - Building detection
+
+### Philippine Context
+
+- [PhilSA Publications](https://philsa.gov.ph/publications/) - Philippine space agency reports and research
+- [DOST-ASTI PANDA](https://panda.stamina4space.upd.edu.ph) - Philippine satellite data archive
+
+---
+
+## Assessment
+
+### Formative Assessment (During Session)
+
+**Self-Check Questions:**
+
+1. ✓ Can you explain the difference between a perceptron and a multi-layer network?
+2. ✓ Why does ReLU work better than sigmoid in hidden layers?
+3. ✓ What does a convolutional filter "learn" during training?
+4. ✓ How does pooling provide translation invariance?
+5. ✓ When would you use U-Net instead of ResNet?
+
+**Interactive Exercises:**
+- ✓ Complete all TODO cells in theory notebook
+- ✓ Implement manual convolution from scratch
+- ✓ Visualize at least 3 different activation functions
+- ✓ Compare filter responses on forest vs urban areas
+
+### Summative Assessment (End of Session)
+
+**Knowledge Check (10 questions, multiple choice):**
+- Neural network components
+- CNN architecture understanding
+- Application selection (classification vs segmentation)
+- Data requirements and constraints
+
+**Practical Demonstration:**
+- Explain CNN decision-making process for a sample image
+- Sketch appropriate architecture for given EO task
+- Estimate data requirements for Philippine use case
+
+**Readiness for Session 4:**
+- ✓ Understand TensorFlow/Keras workflow conceptually
+- ✓ Recognize data preparation needs
+- ✓ Anticipate training challenges
+
+---
+
+## Next Steps
+
+::: {.callout-note}
+## After Session 3
+
+You now understand CNN theory and operations! Session 4 puts this knowledge into practice with hands-on implementation.
+
+**Session 4: Hands-On CNN Implementation**
+
+You'll build and train:
+1. **A CNN from scratch** on EuroSAT (Sentinel-2 RGB chips, 10 classes)
+2. **A ResNet50 transfer-learning model** on the same data
+
+Using TensorFlow/Keras on a Colab GPU. (U-Net segmentation follows on Day 3.)
+
+[Continue to Session 4 →](session4.qmd){.btn .btn-primary}
+:::
+
+### Recommended Pre-Work for Session 4
+
+Before Session 4, please:
+
+1. ✅ **Review notebook exercises** - Ensure you understand convolution and activation functions
+2. ✅ **Skim the EuroSAT paper** - [Helber et al. 2019](https://arxiv.org/abs/1709.00029) (15 min)
+3. ✅ **Check GPU access** - Enable GPU in Colab (Settings → Hardware Accelerator → GPU)
+4. ✅ **Check TensorFlow** - run `import tensorflow as tf; print(tf.__version__)` in Colab (TensorFlow 2.16+ with Keras 3 is pre-installed)
+
+### Extended Learning Paths
+
+**Path 1: Deep Dive into Theory**
+- Complete CS231n Stanford course
+- Implement backpropagation from scratch
+- Study optimization algorithms (Adam, RMSprop)
+
+**Path 2: Explore Advanced Architectures**
+- Attention mechanisms (Transformers for EO)
+- Vision Transformers (ViT)
+- Self-supervised learning (SimCLR, MoCo)
+
+**Path 3: Philippine EO Applications**
+- Share labelled training data openly so others can reuse it
+- Develop CNN model for local area
+- Publish results in Philippine GIS conference
+
+---
+
+::: {.callout-tip collapse="true"}
+## 💡 Instructor Notes
+
+**Timing:**
+
+- **Part A (ML→DL):** 15 min - Keep conceptual, avoid getting bogged down in math
+- **Part B (NN Fundamentals):** 25 min - Live code perceptron, let students modify
+- **Part C (CNNs):** 30 min - Most critical section, use lots of visuals
+- **Part D (EO Applications):** 25 min - Show published Philippine examples (flood or land cover maps) if possible
+- **Part E (Practical):** 15 min - Set realistic expectations for Session 4
+
+**Total:** 110 min (2.5 hours with 20 min buffer for questions)
+
+---
+
+**Common Student Challenges:**
+
+1. **"I don't understand backpropagation"**
+   → Focus on intuition (gradient descent down error surface), not calculus. Session 4 uses libraries that handle this automatically.
+
+2. **"Why are we doing manual convolutions in NumPy?"**
+   → Emphasize this is for learning. Session 4 uses optimized libraries (1000× faster). Like learning to drive with manual transmission—helps understand what's happening under the hood.
+
+3. **"Will my laptop be fast enough for Session 4?"**
+   → No local installation needed! Google Colab provides free GPUs. Sessions 4 notebooks are optimized for Colab free tier.
+
+4. **"Can CNNs use Sentinel-2's 10+ bands?"**
+   → YES! Unlike ImageNet RGB pre-training. Session 4 discusses adaptation strategies (EuroSAT also exists as a 13-band dataset). This is a big advantage of CNNs for EO.
+
+---
+
+**Teaching Tips:**
+
+- **Start with Familiar:** Connect to Session 2 Random Forest throughout
+- **Visual Heavy:** Show lots of images/diagrams (CNNs are visual learners!)
+- **Interactive:** Have students modify filter values in real-time
+- **Philippine Examples:** Use Palawan imagery from Session 2 for continuity
+- **Manage Expectations:** Be honest about data/compute requirements
+- **Celebrate Progress:** point out how far learners have come since the perceptron
+
+---
+
+**Demonstration Best Practices:**
+
+1. **Perceptron Demo:** Use simple 2D data first (NDVI vs NDWI), visualize decision boundary updating in real-time
+2. **Convolution Demo:** Pick dramatic example (forest edge) where edge detection is obvious
+3. **Architecture Comparison:** Show parameter counts to emphasize efficiency gains
+4. **Philippine Focus:** Always end each section with "How does this help DENR/PhilSA/LGUs?"
+
+---
+
+**Assessment Rubric:**
+
+| Criteria | Excellent (5) | Good (4) | Adequate (3) | Needs Improvement (2) |
+|----------|---------------|----------|--------------|----------------------|
+| **Conceptual** | Explains CNN advantages with examples | States CNN benefits | Lists CNN components | Confuses CNN with traditional ML |
+| **Technical** | Implements convolution from scratch | Completes all notebook exercises | Completes >70% exercises | Struggles with NumPy operations |
+| **Application** | Proposes appropriate architecture for novel task | Identifies correct architecture for standard tasks | Distinguishes classification vs segmentation | Cannot select architecture |
+| **Readiness** | Articulates Session 4 workflow | Understands TensorFlow role | Knows Session 4 is hands-on | Unclear on next steps |
+
+---
+
+**Session 4 Transition:**
+
+End with excitement:
+*"You've learned the theory. Next you'll build and train a CNN on real Sentinel-2 chips and use transfer learning. Bring your questions and your data ideas!"*
+
+**Preview Session 4 Outcomes:**
+- A from-scratch CNN reaching ~90%+ on EuroSAT
+- A fine-tuned ResNet50 that improves on it
+- Saved `.keras` models learners can reuse
+
+---
+
+**Backup Activities (if ahead of schedule):**
+
+1. **Live Code Challenge:** "Build a 3-layer network for Palawan classification" (10 min)
+2. **Architecture Design:** "Sketch CNN for building detection task" (5 min)
+3. **Group Discussion:** "What EO problem in YOUR organization could use CNNs?" (10 min)
+
+---
+
+**Resource Check (Before Session):**
+
+- ✓ Test that the notebook runs end-to-end in Colab
+- ✓ Pre-download datasets to Google Drive (backup)
+- ✓ Have architecture diagrams ready (slides or drawn)
+- ✓ Queue up CNN Explainer website for demos
+- ✓ Test video/screen sharing for visualizations
+:::

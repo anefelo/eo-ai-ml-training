@@ -1,0 +1,314 @@
+---
+title: "Setup Guide"
+subtitle: "Get ready for the EO AI/ML Training: Google Colab, Earth Engine, and an optional local environment"
+date: last-modified
+---
+
+::: {.hero}
+# 🚀 Start Here: Setup Guide
+
+### Do this before Day 1
+
+The course runs in **Google Colab**, so you only need a browser and a Google account. **Google Earth Engine** (used on Day 1 and in some later labs) also needs a Google Cloud project registered for noncommercial use. A local Python environment is optional.
+:::
+
+::: {.callout-important}
+## ⏰ Do this before you start
+
+**Time required:** about 20–30 minutes
+
+**Steps:**
+
+1. ✅ Google account
+2. ✅ Test Google Colab
+3. ✅ Create a Cloud project and register it for noncommercial Earth Engine use
+4. ✅ Run the verification cell
+
+**Already done?** Jump to the [final check](#final-check).
+:::
+
+---
+
+## What You Need
+
+::: {.prerequisites-checklist}
+- [ ] A **Google account** (Gmail or Google Workspace)
+- [ ] A **modern web browser** (current Chrome, Firefox, Edge or Safari)
+- [ ] A **stable internet connection** (Colab and Earth Engine run in the cloud)
+- [ ] A computer with **4 GB+ RAM** (8 GB recommended if you use a local setup)
+:::
+
+---
+
+## Step 1: Google Account
+
+You need a Google account for Google Colab and Google Earth Engine. If you already use Gmail, you're set.
+
+To create one, go to [accounts.google.com](https://accounts.google.com), click **Create account** and follow the steps.
+
+::: {.callout-tip}
+## Work or university account?
+Google Workspace accounts work too, but some organisations block Colab or Google Cloud. If something is blocked, use a personal Google account.
+:::
+
+---
+
+## Step 2: Google Colab
+
+### 2.1 What is Google Colab?
+
+Google Colaboratory (Colab) is a free cloud service for running Jupyter notebooks in your browser. It provides:
+
+- Free (time-limited) access to GPUs, useful for the Day 2–4 deep learning labs
+- Most libraries the course uses, pre-installed (NumPy, pandas, scikit-learn, TensorFlow/Keras 3, PyTorch, GeoPandas, Rasterio, the Earth Engine API, geemap)
+- A current Python (3.13 as of November 2026)
+- Google Drive integration for saving your work
+
+### 2.2 Test Colab
+
+1. Go to [colab.research.google.com](https://colab.research.google.com) and sign in
+2. Click **File → New notebook**
+3. Paste this into the first cell and press **Shift + Enter**:
+
+```python
+import sys
+import numpy as np, pandas as pd, matplotlib
+print("Python:", sys.version.split()[0])
+print("NumPy:", np.__version__, "| pandas:", pd.__version__, "| Matplotlib:", matplotlib.__version__)
+print("Google Colab is working!")
+```
+
+::: {.callout-note}
+## First run takes longer
+The first cell of a new session can take 30–60 seconds while Colab allocates a machine.
+:::
+
+### 2.3 Turn on a GPU (for Days 2–4)
+
+**Runtime → Change runtime type → Hardware accelerator: T4 GPU** (or any available GPU). Free GPU time is limited and not guaranteed; the labs also run on CPU, just more slowly.
+
+---
+
+## Step 3: Google Earth Engine
+
+### 3.1 What is Earth Engine?
+
+Google Earth Engine is a cloud platform for planetary-scale geospatial analysis, with a multi-petabyte catalogue (Sentinel-1/2, Landsat, MODIS and more) and Python and JavaScript APIs. You process data where it lives instead of downloading it.
+
+### 3.2 Create and register a Cloud project
+
+Earth Engine now requires **every** user, including noncommercial users, to work through a **Google Cloud project**. Noncommercial use (education, research, non-profit) is free but must be registered, and Google asks you to complete a short eligibility questionnaire.
+
+1. Go to the Earth Engine registration page: [code.earthengine.google.com/register](https://code.earthengine.google.com/register) (or the [Earth Engine page in the Cloud console](https://console.cloud.google.com/earth-engine)).
+2. Sign in with your Google account.
+3. Choose **Use with a Cloud project** → **Unpaid usage**, and pick the project type that describes you (for example academic/research or non-profit). See Google's [noncommercial eligibility guidance](https://developers.google.com/earth-engine/guides/access) if you are unsure.
+4. **Create a new Cloud project** (or select an existing one). Pick a project ID you'll remember, e.g. `ee-yourname-eo`. **Write the project ID down; you need it in every notebook.**
+5. Complete the **noncommercial verification questionnaire**. The registration flow enables the Earth Engine API on the project for you.
+
+::: {.callout-note}
+## How long does it take?
+Registration is usually ready within minutes, but do it **at least a day before** you need it in case verification or your organisation's Google policies delay it. Verified noncommercial projects get the **Community** quota tier (since April 2026: a monthly allowance of 150 EECU-hours), which is plenty for this course ([quota tiers](https://developers.google.com/earth-engine/guides/noncommercial_tiers)).
+:::
+
+::: {.callout-warning}
+## Registered before April 2025?
+Google required projects registered for noncommercial use before 15 April 2025 to complete the verification questionnaire by 26 September 2025. If an old project stopped working, open the [Earth Engine page in the Cloud console](https://console.cloud.google.com/earth-engine) and complete the questionnaire, or register a new project.
+:::
+
+### 3.3 Verify Earth Engine in Colab
+
+Open a new Colab notebook and run:
+
+```python
+import ee
+
+PROJECT_ID = "your-cloud-project-id"   # <-- replace with your own project ID
+
+ee.Authenticate()                  # in Colab this opens a Google sign-in pop-up
+ee.Initialize(project=PROJECT_ID)  # the project argument is required
+
+# Test: find the least cloudy Sentinel-2 image over Metro Manila in 2025
+manila = ee.Geometry.Point([121.0, 14.6])
+img = (ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
+       .filterBounds(manila)
+       .filterDate("2025-01-01", "2026-01-01")
+       .sort("CLOUDY_PIXEL_PERCENTAGE")
+       .first())
+print("✓ Earth Engine is working!")
+print("Image:", img.get("system:index").getInfo(),
+      "| cloud %:", img.get("CLOUDY_PIXEL_PERCENTAGE").getInfo())
+```
+
+`earthengine-api` is pre-installed in Colab; you don't need to `pip install` it.
+
+::: {.callout-tip}
+## Authentication vs. initialisation
+`ee.Authenticate()` stores credentials for your Google account; in a new Colab session it may ask you to confirm again. `ee.Initialize(project=...)` must run **every session**, and every course notebook has a cell where you set your own project ID.
+:::
+
+---
+
+## Step 4: Python Packages in Colab
+
+Almost every package the course uses is pre-installed in Colab. The notebooks install the few that are missing in their first cells, for example:
+
+```python
+# Only what Colab lacks; already-installed packages are skipped quickly
+%pip install -q contextily pystac-client planetary-computer
+```
+
+| Package | Purpose | In Colab by default? |
+|---------|---------|----------------------|
+| `numpy`, `pandas`, `matplotlib` | Numerical computing, data, plots | Yes |
+| `scikit-learn` | Random forest and classic ML | Yes |
+| `tensorflow` / `keras`, `torch` | Deep learning (Days 2–4) | Yes |
+| `geopandas`, `shapely` | Vector data | Yes |
+| `earthengine-api`, `geemap` | Earth Engine and interactive maps | Yes |
+| `rasterio` | Raster data | Yes |
+| `contextily`, `pystac-client`, `planetary-computer` | Basemaps, STAC search, Planetary Computer access | No: notebooks install them |
+
+::: {.callout-note}
+## Restart after installing?
+If a notebook upgrades a pre-installed package, Colab may ask you to **restart the session** (Runtime → Restart session). Do that, then continue from the next cell.
+:::
+
+---
+
+## Step 5: Google Drive (Optional)
+
+Mount Google Drive to keep outputs between sessions:
+
+```python
+from google.colab import drive
+drive.mount("/content/drive")
+```
+
+The course notebooks only mount Drive where it's useful, and otherwise save to the Colab session (`/content`). Free Google accounts have 15 GB of storage shared across Gmail, Drive and Photos; large imagery should stay in Earth Engine.
+
+---
+
+## Step 6: Getting the Notebooks
+
+- **Easiest:** use the **Open in Colab** buttons on the session pages or the [Course Materials](downloads.qmd) page, then **File → Save a copy in Drive** so your edits are kept.
+- **Download:** each notebook can be downloaded as `.ipynb` from the [Course Materials](downloads.qmd) page.
+- **Clone the repository:** `git clone https://github.com/anefelo/eo-ai-ml-training.git`
+
+---
+
+## Optional: Local Setup
+
+Colab is the supported environment. If you prefer to run the notebooks on your own machine, use **Python 3.12 or 3.13**.
+
+### Option A: uv (recommended, fast)
+
+[uv](https://docs.astral.sh/uv/) manages both Python versions and packages.
+
+```bash
+git clone https://github.com/anefelo/eo-ai-ml-training.git
+cd eo-ai-ml-training
+
+uv venv --python 3.12
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+uv pip install -r requirements.txt
+
+python -m ipykernel install --user --name eo-ai-ml-training --display-name "Python (EO AI/ML)"
+jupyter lab
+```
+
+### Option B: pip and venv
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+jupyter lab
+```
+
+::: {.callout-tip}
+## Earth Engine locally
+Run `ee.Authenticate()` once; on a local machine it opens a browser window to sign in (or use `earthengine authenticate` in a terminal). Then call `ee.Initialize(project="your-cloud-project-id")` as in Colab.
+:::
+
+::: {.callout-note}
+## Installation problems?
+`rasterio`, `geopandas` and `pyproj` ship binary wheels for Windows, macOS and Linux, so `pip` normally works. If it fails on your platform, use conda-forge instead: `conda create -n eo -c conda-forge python=3.12 rasterio geopandas` and then `pip install -r requirements.txt` inside that environment. A local GPU is not needed; the deep learning labs run on CPU with smaller settings.
+:::
+
+---
+
+## Troubleshooting
+
+### "Runtime disconnected" in Colab
+
+**Cause:** Colab disconnects idle sessions (typically after about 90 minutes without interaction) and limits total session length (up to 12 hours on the free tier; GPU time is often shorter).
+
+**Solution:**
+- Click **Reconnect**
+- Re-run the setup cells (installs, imports, `ee.Initialize`)
+- Save intermediate results to Drive in long labs
+
+### Earth Engine: "no project found" or "Please set project ID"
+
+**Cause:** `ee.Initialize()` was called without a project, or with a project that isn't registered for Earth Engine.
+
+**Solution:**
+- Call `ee.Initialize(project="your-cloud-project-id")` with your own project ID
+- Check that the project is registered on the [Earth Engine page in the Cloud console](https://console.cloud.google.com/earth-engine)
+
+### Earth Engine: "Permission denied" / "Caller does not have required permission"
+
+**Cause:** your Google account isn't allowed to use that project, or the noncommercial verification isn't complete.
+
+**Solution:**
+- Use a project you created yourself (you're its owner)
+- Complete or re-check the registration questionnaire
+- Make sure you signed in to `ee.Authenticate()` with the same Google account that owns the project
+
+### Package installation fails
+
+```python
+%pip install -q --upgrade contextily
+```
+
+Then **Runtime → Restart session** and re-run the notebook from the top. Avoid pinning very old versions; they often have no wheels for Colab's current Python.
+
+### Slow performance in Colab
+
+- Switch to a GPU runtime for deep learning labs (**Runtime → Change runtime type**)
+- Reduce the area, date range or number of epochs while experimenting
+- Restart the session to free memory (**Runtime → Restart session**)
+
+### Cannot access Google Drive
+
+Re-run `drive.mount("/content/drive")` and accept all requested permissions in the pop-up.
+
+---
+
+## Final Check {#final-check}
+
+::: {.final-checklist}
+- [ ] I can sign in to Google Colab and run a cell
+- [ ] I have a Cloud project registered for noncommercial Earth Engine use, and I know its project ID
+- [ ] The Earth Engine verification cell in [Step 3.3](#verify-earth-engine-in-colab) prints an image ID
+- [ ] I know how to switch Colab to a GPU runtime
+:::
+
+---
+
+## Further Help
+
+- [FAQ](faq.qmd): common problems and fixes
+- [Earth Engine: authentication and initialisation](https://developers.google.com/earth-engine/guides/auth)
+- [Earth Engine: Python installation](https://developers.google.com/earth-engine/guides/python_install)
+- [Earth Engine guides](https://developers.google.com/earth-engine/guides) and [developer forum](https://groups.google.com/g/google-earth-engine-developers)
+- [Colab welcome notebook](https://colab.research.google.com/notebooks/welcome.ipynb)
+- [GeoPandas](https://geopandas.org/) and [Rasterio](https://rasterio.readthedocs.io/) documentation
+- [AutoGIS: geospatial Python course](https://autogis-site.readthedocs.io/)
+
+Still stuck? Open an issue on [GitHub](https://github.com/anefelo/eo-ai-ml-training/issues) or email [dimitris@anefelo.com](mailto:dimitris@anefelo.com).
+
+---
+
+[← Home](../index.qmd){.btn .btn-outline-primary}
+[Start Day 1 →](../day1/index.qmd){.btn .btn-primary}

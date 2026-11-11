@@ -1,0 +1,145 @@
+---
+title: "Notebook 1: Python for Geospatial Data"
+subtitle: "Hands-on with GeoPandas and Rasterio"
+date: last-modified
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Session 3 Hands-On Notebook
+
+This notebook accompanies **Session 3: Python for Geospatial Data**. You'll learn to work with vector data using GeoPandas and raster data using Rasterio.
+
+### Learning Objectives
+
+By completing this notebook, you will:
+
+- Load, filter and map Philippine administrative boundaries with GeoPandas
+- Use projected coordinate systems for areas, buffers and dissolves
+- Search a STAC catalogue and stream a Sentinel-2 L2A subset (Cloud-Optimized GeoTIFF) with Rasterio
+- Convert Sentinel-2 digital numbers to reflectance (including the post-2022 offset)
+- Compute and interpret NDVI and NDWI
+- Clip rasters to boundaries and compute zonal statistics
+- Save results as GeoTIFF and GeoPackage
+
+---
+
+## Getting Started
+
+### Option 1: Open in Google Colab (Recommended)
+
+Click the button below to open this notebook in Google Colab:
+
+<a href="https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day1/notebooks/Day1_Session3_Python_Geospatial_Data.ipynb" target="_blank">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+**Advantages:**
+- No installation required
+- Runs on a free CPU runtime (no GPU needed for this notebook)
+- Can save outputs to your Google Drive
+
+### Option 2: Download Notebook
+
+Download the Jupyter notebook to run locally or upload to your own Colab:
+
+::: {.download-box}
+[Download .ipynb File](Day1_Session3_Python_Geospatial_Data.ipynb){.btn .btn-primary}
+
+**Requirements for local use:**
+```bash
+pip install numpy pandas matplotlib geopandas rasterio pystac-client planetary-computer contextily
+```
+:::
+
+### Option 3: View Online
+
+You can also view the notebook content below without running any code.
+
+---
+
+## Notebook Preview
+
+::: {.callout-note}
+## Interactive Execution Required
+This is a hands-on exercise notebook. For the best learning experience, open it in Google Colab or Jupyter to run the code cells interactively.
+:::
+
+### Topics Covered
+
+1. **Environment setup** (Colab or local) and a short Python recap
+2. **GeoPandas** with Natural Earth boundaries: inspect, filter, dissolve Metro Manila, 50 km buffer, maps with a basemap
+3. **Rasterio + STAC**: Sentinel-2 L2A over Puerto Princesa, Palawan from Microsoft Planetary Computer; reflectance conversion, band statistics, true/false colour composites, NDVI
+4. **Vector + raster**: reprojection, clipping to the Palawan boundary, overlay, zonal statistics, saving results
+5. **Best practices** (memory, CRS, nodata) and a recap
+
+---
+
+## Prerequisites
+
+Before starting this notebook, ensure you have:
+
+- Completed the [Setup Guide](../../resources/setup.qmd)
+- Google account (for Colab)
+- Basic Python knowledge
+- Understanding of Session 3 concepts
+
+---
+
+## Notebook Contents
+
+The full interactive notebook includes:
+
+- About 30 code cells, all runnable without an account
+- Two exercises (home province map; NDWI water index) with hidden solutions
+- A table of common errors and fixes
+
+---
+
+## Support
+
+### During the Training
+
+- Ask questions in the live session (instructor-led cohorts)
+- Work through the exercises at your own pace
+
+### After the Training
+
+- Review the [Cheat Sheets](../../resources/cheatsheets.qmd)
+- Check the [FAQ](../../resources/faq.qmd)
+- Access the [Glossary](../../resources/glossary.qmd)
+
+---
+
+## Related Resources
+
+::: {.resource-links}
+**Session Materials:**
+- [Session 3: Python for Geospatial Data](../sessions/session3.qmd)
+- [Session 3 Presentation Slides](../presentations/03_session3_python_geospatial.html)
+
+**Quick References:**
+- [GeoPandas Cheat Sheet](../../resources/cheatsheets.qmd#geopandas-cheat-sheet)
+- [Rasterio Cheat Sheet](../../resources/cheatsheets.qmd#rasterio-cheat-sheet)
+
+**Documentation:**
+- [GeoPandas Documentation](https://geopandas.org/)
+- [Rasterio Documentation](https://rasterio.readthedocs.io/)
+- [pystac-client Documentation](https://pystac-client.readthedocs.io/)
+:::
+
+---
+
+## Next Steps
+
+After completing this notebook:
+
+1. ✅ Practice with your own Philippine data
+2. ✅ Move on to [Session 4: Google Earth Engine](../sessions/session4.qmd)
+3. ✅ Try [Notebook 2: Google Earth Engine](notebook2.qmd)
+
+---
+
+*Ready to code? Open the notebook in Colab and start learning!*

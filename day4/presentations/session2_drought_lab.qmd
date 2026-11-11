@@ -1,0 +1,146 @@
+---
+title: "Session 2: Hands-on - LSTM Drought Monitoring Lab"
+subtitle: "Mindanao Case Study with GEE-Sourced NDVI Forecasting"
+author: "Dimitrios Kasampalis"
+institute: "Anefelo"
+date: ""
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "DAY 4 - Session 2 | LSTM Drought Lab | EO AI/ML Training"
+    transition: fade
+    background-transition: fade
+    width: 1920
+    height: 1080
+    margin: 0.1
+---
+
+## Session Agenda {.smaller}
+
+- **Duration:** 2.5 hours (150 minutes)
+- **Flow:**
+  - 0-15: Kickoff & objectives
+  - 15-45: Module 1 - Connect to GEE & load NDVI (live or cached)
+  - 45-75: Module 2 - Tidy data & build sequences
+  - 75-115: Module 3 - Configure PyTorch LSTM workflow
+  - 115-135: Module 4 - Train & monitor
+  - 135-145: Module 5 - Evaluate & drought decisions
+  - 145-150: Reflection & wrap-up
+
+---
+
+## Learning Objectives
+
+- Retrieve Sentinel-2 NDVI time series for Mindanao provinces using Google Earth Engine
+- Transform GEE exports into supervised sliding-window datasets (NDVI-only baseline)
+- Train, tune, and monitor a PyTorch LSTM with strict temporal validation
+- Compare forecasts with persistence and seasonal baselines (MAE/RMSE)
+- Translate forecasts into drought alerts and score them (precision/recall)
+
+---
+
+## Resources
+
+- Student notebook: `day4/notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb`
+- Instructor notebook: `day4/notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb`
+- Default data: cached monthly NDVI sample `day4/data/mindanao_ndvi_sample.csv` (2018–2023, two provinces), so the lab runs without Earth Engine
+- Optional live data: Earth Engine Python API + a Cloud project registered for Earth Engine: `ee.Initialize(project="your-cloud-project")`
+- Reference: [PyTorch `nn.LSTM` documentation](https://docs.pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
+
+---
+
+# Module 0: Setup & Context {background-color="#2C5F77"}
+
+## Focus
+
+- Ground the Mindanao drought challenge and toolkit
+- Ensure Earth Engine + PyTorch environment is ready
+
+## Actions
+
+- Quick NDVI refresher tied to agriculture risk
+- Open the student notebook in Colab (CPU runtime is enough)
+- Optional: set `USE_EARTH_ENGINE = True` and your Cloud project ID; authenticate once per user
+- Why PyTorch here? Session 1 used Keras: same LSTM, second framework
+
+---
+
+# Module 1: Authenticate & Fetch NDVI {background-color="#2C5F77"}
+
+## Focus
+
+- Pull monthly Sentinel-2 NDVI for Bukidnon & South Cotabato straight from GEE
+
+## Actions
+
+- Define province areas (rough bounding boxes; use official boundaries for real work)
+- GEE pipeline: S2 SR harmonised → SCL cloud/shadow mask → NDVI → monthly median → ESA WorldCover cropland mask → province mean
+- One request per province and year; save to CSV; fall back to the cached sample if anything fails
+
+---
+
+# Module 2: Tidy & Build Sequences {background-color="#2C5F77"}
+
+## Focus
+
+- Prepare NDVI-only inputs for sequence modelling
+
+## Actions
+
+- Inspect gaps/outliers; impute or drop empty months
+- Create 12-month lookback / 1-month horizon windows per province
+- Temporal split: train on early years, validate on the next, test on the last year
+- Min-max scale using the **training period only** (no leakage)
+
+---
+
+# Module 3: Configure PyTorch LSTM {background-color="#2C5F77"}
+
+## Focus
+
+- Assemble the modelling pipeline around real NDVI data
+
+## Actions
+
+- Wrap sequences in custom `Dataset`/`DataLoader`
+- Define 2-layer LSTM (64 → 32 units, dropout 0.2) + dense head (same design as the Keras model in Session 1)
+- Select optimizer (Adam 1e-3), loss (MSE), metrics (MAE)
+
+---
+
+# Module 4: Train & Monitor {background-color="#2C5F77"}
+
+## Focus
+
+- Fit the model while checking for convergence and overfitting
+
+## Actions
+
+- Train up to 150 epochs with early stopping on validation loss (patience 20); keep the best weights
+- Track train/val MSE + MAE; adjust learning rate/batch if unstable
+- Fixed random seeds for reproducibility; CPU training takes under a minute
+
+---
+
+# Module 5: Evaluate & Drive Decisions {background-color="#2C5F77"}
+
+## Focus
+
+- Convert forecasts into drought intelligence for stakeholders
+
+## Actions
+
+- Invert scaling and plot actual vs predicted NDVI per province
+- MAE/RMSE vs **persistence** (next = this month) and **seasonal naive** (next = same month last year) baselines
+- NDVI < 0.40 alert table with precision/recall (an illustrative threshold, not an official criterion)
+
+---
+
+## Reflection & Wrap-up
+
+- Key lessons: accessing satellite archives, disciplined validation, explainable alerts
+- Capture open questions for Session 3 (XAI & emerging AI)
+- Stretch: add rainfall / ONI / soil moisture as inputs, forecast NDVI anomalies, predict 3 months ahead, explain with Integrated Gradients

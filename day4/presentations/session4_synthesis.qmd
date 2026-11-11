@@ -1,0 +1,123 @@
+---
+title: "Session 4: Synthesis, Q&A, and Pathway to Continued Learning"
+subtitle: "From Techniques to Operational EO AI in the Philippines"
+author: "Dimitrios Kasampalis"
+institute: "Anefelo"
+date: ""
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "DAY 4 - Session 4 | Synthesis & Next Steps | EO AI/ML Training"
+    transition: fade
+    background-transition: fade
+    width: 1920
+    height: 1080
+    margin: 0.1
+---
+
+## Session Plan {.smaller}
+
+- **Duration:** 2 hours (120 minutes)
+- **Plan:**
+  - 0–15: 4-day journey recap
+  - 15–45: Technique selection matrix
+  - 45–75: Best practices for deployment
+  - 75–100: Philippine EO platforms & continued learning
+  - 100–115: Action plans (3-month roadmap)
+  - 115–120: Closing & feedback
+
+---
+
+## Session Objectives
+
+- Connect the techniques from Days 1–4 into one decision framework
+- Apply deployment best practices: data quality, validation, monitoring
+- Know where to find Philippine EO data and further learning
+- Leave with a concrete 3-month action plan
+
+---
+
+## What You Can Now Do
+
+- Build LSTMs for EO time series (Day 4)
+- Train RF, CNNs, U-Net for EO tasks (Days 2–3)
+- Use foundation models, embeddings, SSL and XAI to scale and explain models (Day 4)
+- Design operational pipelines and monitoring (Day 4)
+
+---
+
+# Recap of Days 1–4 {background-color="#2C5F77"}
+
+## Highlights
+
+- Day 1: Copernicus and Philippine EO data, AI/ML basics, Python geospatial, Google Earth Engine
+- Day 2: Random Forest land cover (Palawan), CNNs, transfer learning
+- Day 3: U-Net segmentation, Sentinel-1 flood mapping, object detection
+- Day 4: LSTM drought forecasting (Mindanao), foundation models, embeddings, SSL, XAI
+
+---
+
+## Technique Selection Matrix
+
+- Classification (image/patch) → CNN / transfer learning, or a classifier on embeddings
+- Segmentation (pixel-wise) → U-Net / GeoFM fine-tuning
+- Detection (bounding boxes) → YOLO/SSD/DETR
+- Time series → LSTM/Transformers, temporal validation
+- Tabular + EO features → Random Forest/XGBoost
+
+---
+
+# Best Practices {background-color="#2C5F77"}
+
+## Data-Centric AI
+
+- Fix labels, balance classes, represent regions/seasons
+
+## Validation
+
+- Temporal splits, spatial CV, stratified sampling
+
+## Monitoring
+
+- Concept/data drift, retraining schedule, dashboards
+
+## Deployment
+
+- APIs, performance budgets, documentation, XAI
+
+---
+
+# Platforms & Continued Learning {background-color="#2C5F77"}
+
+## Philippine EO Platforms
+
+- **CopPhil Infrastructure** (Copernicus mirror site hosted at PhilSA): Sentinel data, JupyterLab, [infra.copphil.philsa.gov.ph](https://infra.copphil.philsa.gov.ph)
+- **CopPhil Digital Campus**: self-paced EO courses, [courses.copphil.philsa.gov.ph](https://courses.copphil.philsa.gov.ph)
+- **SkAI-Pinas / DOST-ASTI:** DIMER (model repository), AIPI
+- PhilSA Space+ Data Dashboard, [NAMRIA Geoportal](https://www.geoportal.gov.ph), [PAGASA climate data](https://www.pagasa.dost.gov.ph/climate/climate-monitoring)
+
+## Keep Learning
+
+- All course materials stay online: [anefelo.github.io/eo-ai-ml-training](https://anefelo.github.io/eo-ai-ml-training/)
+- Earth Engine tutorials, [EO College](https://eo-college.org), TorchGeo / TerraTorch docs
+- Learn with colleagues: pick a shared project, review each other's notebooks
+
+---
+
+## 3-Month Action Plan
+
+- Week 1: Pick a starter project, run baseline
+- Month 1: Proof of concept with validation
+- Month 2: Improve data + model, stakeholder review
+- Month 3: Pilot deployment + monitoring
+
+---
+
+## Closing & Feedback
+
+- What will you try first? Share one idea with a neighbour
+- Feedback and questions: [dimitris@anefelo.com](mailto:dimitris@anefelo.com)
+- Thank you!

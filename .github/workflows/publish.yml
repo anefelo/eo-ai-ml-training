@@ -1,0 +1,57 @@
+name: Publish site to GitHub Pages
+
+# Renders the Quarto website and deploys it to https://anefelo.github.io/eo-ai-ml-training/
+# Repository setting required once: Settings -> Pages -> Build and deployment -> Source: "GitHub Actions".
+#
+# Nothing is executed at build time (execute.enabled: false in _quarto.yml): notebooks are published
+# with the outputs stored in the .ipynb files, so no Python environment is needed here.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+        with:
+          # Pinned to the version the site was last checked with locally; bump deliberately.
+          version: 1.11.9
+
+      - name: Render site
+        run: quarto render
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v6
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

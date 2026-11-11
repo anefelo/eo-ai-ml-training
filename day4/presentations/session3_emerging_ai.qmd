@@ -1,0 +1,273 @@
+---
+title: "Session 3: Emerging AI Trends in Earth Observation"
+subtitle: "Foundation Models, Embeddings, Self-Supervised Learning, On-board AI and Explainable AI"
+author: "Dimitrios Kasampalis"
+institute: "Anefelo"
+date: ""
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    chalkboard: true
+    preview-links: auto
+    footer: "DAY 4 - Session 3 | Emerging AI in EO | EO AI/ML Training"
+    transition: fade
+    background-transition: fade
+    width: 1920
+    height: 1080
+    margin: 0.1
+---
+
+## Agenda & Pacing {.smaller}
+
+- **Duration:** 2 hours (120 minutes)
+- **Plan:**
+  - 0–10: Session goals & context
+  - 10–55: Geospatial foundation models (GeoFMs) and embedding datasets
+  - 55–70: On-board AI (Φsat-2, models in orbit)
+  - 70–90: Self-supervised learning (SSL)
+  - 90–110: Explainable AI (XAI)
+  - 110–120: Discussion & next steps
+
+::: {.callout-note}
+State of the field as of **November 2026**. This area moves fast: every model fact on these slides carries a source, so check the link for the latest version.
+:::
+
+---
+
+## Learning Objectives
+
+- Define foundation models and name the main open GeoFMs (Prithvi-EO-2.0, Clay, TerraMind, Copernicus-FM, DOFA, SatMAE)
+- Explain **embedding datasets** (AlphaEarth Foundations / Satellite Embedding, Tessera, OlmoEarth) and when to use them instead of fine-tuning
+- Describe what on-board AI can do today (Φsat-2, GeoFMs in orbit)
+- Explain SSL and why it suits unlabelled satellite archives
+- Apply XAI concepts (SHAP, LIME, Grad-CAM, Integrated Gradients) to EO models
+- Decide when FM, embeddings, SSL or XAI fit a Philippine use case
+
+---
+
+# Foundation Models (GeoFMs) {background-color="#2C5F77"}
+
+## What & Why
+
+- Pre-trained once with **self-supervision** on large, global EO archives
+- Adapted to many tasks: **fine-tune** a head (or the whole model), or just use the **embeddings** as features
+- Label-efficient: published benchmarks show useful results from small labelled sets, but how small depends on the task. Test on your own data before promising "100 labels"
+- Global pre-training data includes Southeast Asia, but check how well your region and season are represented
+
+---
+
+## Traditional CNN vs Foundation Model
+
+| | Train a CNN from scratch | Start from a GeoFM |
+|---|---|---|
+| Pre-training | none (or ImageNet) | self-supervised on global EO archives |
+| Labels needed | many (thousands typical) | fewer: start small, measure, add more |
+| Sensors | usually one, fixed bands | model-dependent: multi-sensor, any-band models exist |
+| Compute to adapt | full training run | fine-tune a head / small model, or train a classifier on embeddings |
+| Main risk | overfitting small data | domain shift (sensor, resolution, region) from the pre-training data |
+
+---
+
+## Why It Matters for the Philippines
+
+- **Label scarcity:** few agencies hold large, consistent labelled datasets
+- **Disaster tempo:** typhoon and flood products are needed within hours to days
+- **Heterogeneous landscapes:** from Metro Manila to BARMM, plus persistent cloud cover (SAR-capable models help)
+- **Budget efficiency:** one backbone (or one embedding dataset) reused for crops, mangroves and settlements
+
+---
+
+## Open GeoFMs You Can Use (Nov 2026) {.smaller}
+
+| Model | Who / when | What it is | Source |
+|---|---|---|---|
+| **Prithvi-EO-2.0** | IBM, NASA, Jülich SC · Dec 2024 | 300M / 600M ViT, masked autoencoder on **4.2M** global HLS time-series samples (30 m), temporal + location embeddings | [arXiv 2412.02732](https://arxiv.org/abs/2412.02732), [IBM blog](https://research.ibm.com/blog/prithvi2-geospatial) |
+| **Clay v1.5** | Clay · 2024 (trained Sep 2024) | MAE-based, any number of bands; trained on Sentinel-2, Landsat, Sentinel-1, NAIP, LINZ, MODIS; Apache-2.0 | [Clay v1.5 spec](https://clay-foundation.github.io/model/release-notes/specification.html) |
+| **TerraMind 1.0** | IBM + ESA Φ-lab + Jülich SC · Apr 2025 | any-to-any **generative** multimodal model (S1, S2, DEM, land cover…), >9M samples; tiny/small edge versions Oct 2025 | [ESA](https://www.esa.int/Applications/Observing_the_Earth/ESA_and_IBM_collaborate_on_TerraMind), [Φ-lab](https://philab.esa.int/less-is-more-the-power-of-terramind-in-your-pocket-and-in-space/) |
+| **Copernicus-FM** | TUM and partners · ICCV 2025 | extends DOFA to any Sentinel modality (S1, S2, S3, S5P); with Copernicus-Pretrain data and Copernicus-Bench | [GitHub](https://github.com/zhu-xlab/copernicus-fm) |
+| **DOFA** | Xiong et al. · 2024 | "Dynamic One-For-All": wavelength-conditioned patch embedding, so one model serves optical, SAR, hyperspectral | [arXiv 2403.15356](https://arxiv.org/abs/2403.15356) |
+| **SatMAE** | Stanford · NeurIPS 2022 | early MAE for temporal + multispectral imagery (fMoW-Sentinel); a key ancestor of the models above | [project page](https://sustainlab-group.github.io/SatMAE/) |
+
+Fine-tuning toolkit for Prithvi/TerraMind and many others: [TerraTorch](https://github.com/torchgeo/terratorch)
+
+---
+
+## The 2025–26 Shift: Embedding Datasets {.smaller}
+
+Instead of running a model yourself, **download pre-computed embeddings** (one vector per 10 m pixel per year) and train a small classifier on them, like the Random Forest from Day 2.
+
+| Dataset | Producer | Details | Source |
+|---|---|---|---|
+| **Satellite Embedding V1** (AlphaEarth Foundations) | Google / Google DeepMind · Jul 2025 | 64-D, 10 m, annual, global land + coastal; in Earth Engine as `GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL` (bands `A00`–`A63`) | [EE catalog](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL), [DeepMind](https://deepmind.google/blog/alphaearth-foundations-helps-map-our-planet-in-unprecedented-detail/), [paper](https://arxiv.org/abs/2507.22291) |
+| **Tessera** | Univ. of Cambridge and partners · 2025 (CVPR 2026 paper) | Sentinel-1 + Sentinel-2, 10 m, annual embeddings 2017–2025, open, no registration | [ESA, Jun 2026](https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Tessera_AI_model_offers_accessible_way_to_view_Earth) |
+| **OlmoEarth v1.3** | Ai2 · Oct 2026 | S1 + S2 + Landsat year → 128-D vector per 10 m pixel (first 64 dims usable alone); global embeddings on Source Cooperative | [Ai2 blog](https://allenai.org/blog/olmoearth-v1-3) |
+
+**Caveat:** embedding dimensions are not physically interpretable. Validate against local reference data before operational use.
+
+---
+
+## Embeddings in Practice (Earth Engine)
+
+```python
+import ee
+ee.Initialize(project="your-cloud-project")   # EE now requires a Cloud project
+
+aoi = ee.Geometry.Rectangle([124.36, 7.05, 125.63, 8.84])   # ~Bukidnon (bbox)
+emb = (ee.ImageCollection("GOOGLE/SATELLITE_EMBEDDING/V1/ANNUAL")
+         .filterDate("2024-01-01", "2025-01-01")
+         .filterBounds(aoi)
+         .mosaic())                                     # 64 bands: A00 … A63
+
+training = emb.sampleRegions(collection=labelled_points,   # your field labels
+                             properties=["class"], scale=10)
+clf = ee.Classifier.smileRandomForest(100).train(training, "class", emb.bandNames())
+landcover = emb.classify(clf).clip(aoi)
+```
+
+Same workflow as Day 2, but the 64 embedding bands replace the hand-made spectral features. Google's [tutorial series](https://developers.google.com/earth-engine/tutorials/community/satellite-embedding-01-introduction) covers this in more detail.
+
+---
+
+## How a GeoFM Works
+
+```{mermaid}
+flowchart LR
+  A["Large unlabelled EO archive"] --> B["Self-supervised pre-training<br/>(masking, contrastive, multimodal)"]
+  B --> C["Foundation model"]
+  C --> D["Fine-tune with a small labelled set"]
+  C --> E["Or: export embeddings,<br/>train a light classifier"]
+  D --> F["Task model: flood, crop, mangrove…"]
+  E --> F
+```
+
+- Pre-train once (expensive, done by the model provider); adapt many times (cheap)
+
+---
+
+## Philippine Use Cases: Project Ideas {.smaller}
+
+These are **illustrative project ideas** for discussion, not deployed systems. The numbers depend on your data.
+
+- **Rapid flood mapping:** fine-tune Prithvi-EO-2.0 or TerraMind on Sentinel-1/-2 flood labels (start from public Sen1Floods11 checkpoints, add local Philippine events)
+- **Crop and land-cover mapping:** Satellite Embedding / Tessera features + a few hundred DA/PSA field points → provincial crop map
+- **Mangrove monitoring:** embeddings + DENR / NAMRIA reference plots, compared year to year for change
+- **Drought (link to Session 2):** add embedding-derived land-cover masks to restrict NDVI forecasts to cropland
+
+---
+
+# On-board AI {background-color="#2C5F77"}
+
+## AI in Orbit: Where We Are (Nov 2026) {.smaller}
+
+- **Φsat-2 (ESA):** 6U CubeSat launched 16 Aug 2024 (Transporter-11); multispectral imager; entered operational phase in July 2025
+  - On-board apps: cloud detection (discard cloudy scenes), image-to-street-map for disaster response, deep image compression, vessel detection, wildfire and marine-pollution monitoring
+  - Source: [ESA EO Gateway, Jul 2025](https://earth.esa.int/eogateway/news/ai-enabled-satellite-enters-operational-phase)
+- **GeoFMs in orbit:** a compressed Prithvi model ran flood and cloud detection on the Kanyini satellite and on Thales Alenia Space's IMAGIN-e payload on the ISS, the first GeoFM deployed in orbit ([NASA, May 2026](https://science.nasa.gov/science-research/ai-foundation-model-in-orbit/), [preprint](https://arxiv.org/abs/2512.01181))
+- **Edge-sized models:** tiny/small TerraMind and Prithvi variants for laptops, phones and satellites (Oct 2025, [IBM](https://research.ibm.com/blog/terramind-prithvi-tiny-small-models-geospatial))
+
+**Why it matters:** less downlink and lower latency, which helps time-critical alerts (fires, floods, ships). Trade-off: smaller models, harder validation.
+
+---
+
+# Self-Supervised Learning {background-color="#2C5F77"}
+
+## Why SSL for EO
+
+- Only a tiny fraction of the satellite archive is labelled; SSL learns from the raw archive
+- Cuts annotation cost and helps "cold-start" regions with few labels
+- Produces representations reusable for segmentation, detection, forecasting, which is what makes GeoFMs possible
+
+---
+
+## Common SSL Strategies
+
+- **Masked autoencoding:** hide most patches (often ~75%) and reconstruct them (SatMAE, Prithvi, Clay)
+- **Contrastive learning:** pull together views of the same place/time, push apart others (SimCLR, MoCo); **self-distillation** variants need no negatives (BYOL, DINO)
+- **Temporal pretext tasks:** order scenes, predict the next time step, detect anomalies
+- **Cross-modal learning:** align or generate Sentinel-1 ↔ Sentinel-2 ↔ DEM (TerraMind, Copernicus-FM)
+
+---
+
+## Building an SSL Pipeline
+
+1. Collect unlabelled Sentinel/Landsat imagery for your area of interest
+2. Cloud/shadow filtering; tile into patches or time series
+3. Choose a pretext objective (masked, contrastive, temporal)
+4. Pre-train a backbone (ViT, CNN, LSTM) on GPUs
+5. Fine-tune on mission-specific labels
+
+**In practice:** before pre-training your own model, check whether an existing GeoFM or embedding dataset already covers your sensor and region.
+
+---
+
+# Explainable AI (XAI) {background-color="#2C5F77"}
+
+## Why XAI
+
+- Builds trust for operational agencies (DRRM, agriculture, enforcement)
+- Reveals bias or drift (seasonal, regional, sensor)
+- Supports governance and documentation requirements
+
+---
+
+## Techniques at a Glance
+
+| Technique | Works With | Insight Provided |
+|-----------|------------|------------------|
+| **SHAP** | Tree models, tabular and deep models | Feature contribution per prediction |
+| **LIME** | Any classifier/regressor | Local surrogate explaining one sample |
+| **Grad-CAM** | CNN-based models | Heatmap of salient pixels/regions |
+| **Integrated Gradients** | Differentiable models (incl. transformers, LSTMs) | Attribution along an input path |
+
+Libraries: [SHAP](https://shap.readthedocs.io/en/latest/), [LIME](https://github.com/marcotcr/lime), [Captum](https://captum.ai/) (PyTorch)
+
+---
+
+## Applying XAI in EO
+
+- **Flood mapping:** Grad-CAM over segmentation outputs to check the model looks at water, not shadows
+- **Drought LSTM (Session 2):** Integrated Gradients to see which past months drive the forecast
+- **Crop yield models:** SHAP to rank NDVI, rainfall, soil moisture drivers
+- **Vessel alerts:** LIME on trajectory features to explain why a track was flagged
+- Pair XAI outputs with review by local analysts (LGUs, NAMRIA, PAGASA)
+
+---
+
+## Philippine Integration Roadmap
+
+1. **Assess:** audit data readiness, choose priority missions (floods, crops, mangroves)
+2. **Adapt:** try embeddings first (cheapest); fine-tune a GeoFM if accuracy is not enough; label locally
+3. **Deploy:** package as an API/dashboard; share models through national repositories such as DOST-ASTI's [DIMER](https://asti.dost.gov.ph/news-articles/dost-asti-dimer-platform-powers-real-world-ai-solutions/)
+4. **Scale:** monitor drift with XAI, refresh labels, expand to new regions
+
+---
+
+## Key Takeaways
+
+- **GeoFMs:** open models (Prithvi-EO-2.0, Clay, TerraMind, Copernicus-FM) cut the labels you need; how much depends on the task
+- **Embeddings first:** Satellite Embedding, Tessera or OlmoEarth + a Random Forest is the cheapest way to start
+- **On-board AI** is operational (Φsat-2) and GeoFMs have run in orbit: lower latency, harder validation
+- **SSL** is what makes all of this possible; check existing models before pre-training your own
+- **XAI** builds trust and catches models that look at the wrong thing; pair it with expert review
+
+---
+
+## Discussion & Q&A
+
+- Where can GeoFMs or embeddings help your agency most?
+- Data readiness and labelling strategies
+- On-board vs ground processing: what latency do you actually need?
+- Risks, governance, and explainability
+
+---
+
+## Sources {.smaller}
+
+- Prithvi-EO-2.0: Szwarcman et al., [arXiv:2412.02732](https://arxiv.org/abs/2412.02732); [IBM Research blog](https://research.ibm.com/blog/prithvi2-geospatial); [Hugging Face](https://huggingface.co/ibm-nasa-geospatial)
+- Clay v1.5: [model specification](https://clay-foundation.github.io/model/release-notes/specification.html)
+- TerraMind: [ESA, 22 Apr 2025](https://www.esa.int/Applications/Observing_the_Earth/ESA_and_IBM_collaborate_on_TerraMind); [ESA Φ-lab, Nov 2025](https://philab.esa.int/less-is-more-the-power-of-terramind-in-your-pocket-and-in-space/); [Hugging Face](https://huggingface.co/ibm-esa-geospatial)
+- Copernicus-FM: Wang et al., ICCV 2025, [GitHub](https://github.com/zhu-xlab/copernicus-fm) · DOFA: Xiong et al., [arXiv:2403.15356](https://arxiv.org/abs/2403.15356) · SatMAE: Cong et al., [NeurIPS 2022](https://sustainlab-group.github.io/SatMAE/)
+- AlphaEarth Foundations: Brown et al., [arXiv:2507.22291](https://arxiv.org/abs/2507.22291); [Satellite Embedding V1](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_SATELLITE_EMBEDDING_V1_ANNUAL)
+- Tessera: [ESA, 4 Jun 2026](https://www.esa.int/Applications/Observing_the_Earth/Copernicus/Tessera_AI_model_offers_accessible_way_to_view_Earth) · OlmoEarth v1.3: [Ai2, 22 Oct 2026](https://allenai.org/blog/olmoearth-v1-3)
+- Φsat-2: [ESA EO Gateway](https://earth.esa.int/eogateway/missions/phisat-2) · Prithvi in orbit: [NASA, May 2026](https://science.nasa.gov/science-research/ai-foundation-model-in-orbit/)

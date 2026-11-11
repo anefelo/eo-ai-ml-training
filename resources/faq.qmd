@@ -1,0 +1,647 @@
+---
+title: "Frequently Asked Questions"
+subtitle: "Common Questions & Troubleshooting"
+date: last-modified
+---
+
+## General Questions
+
+### What is this course?
+
+**EO AI/ML Training** is an open, 4-day course on applying machine learning and deep learning to Earth Observation data, with Philippine case studies (Palawan land cover, Central Luzon flood mapping, Metro Manila object detection, Mindanao drought). It was written by Dimitrios Kasampalis ([Anefelo](https://anefelo.com)), first delivered as a live online course in October 2025, and revised in November 2026. All materials are free under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/).
+
+---
+
+### Who is this course for?
+
+The course was designed for:
+
+- Philippine government employees working in EO, disaster management, agriculture, or environment
+- Researchers at universities and research institutions
+- GIS professionals looking to expand into AI/ML
+- Data scientists interested in geospatial applications
+- Staff of EO-related agencies (e.g. PhilSA, NAMRIA, DOST-ASTI, PAGASA, DENR) and local government units
+
+**Prerequisites:** Basic Python knowledge and familiarity with remote sensing concepts (helpful but not required)
+
+---
+
+### What are the technical requirements?
+
+**Minimum:**
+- Google account (Gmail)
+- Stable internet (5 Mbps+)
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- 4 GB RAM
+
+**Recommended:**
+- 10+ Mbps internet
+- Chrome browser (best compatibility)
+- 8+ GB RAM
+- Dual monitors (one for presentation, one for coding)
+
+**Note:** All exercises run in Google Colaboratory - no local software installation required!
+
+---
+
+### Do I need to install Python locally?
+
+**No!** All hands-on exercises use **Google Colaboratory**, which provides:
+
+- Free cloud computing resources
+- Pre-installed Python libraries
+- Access to GPUs
+- No local installation needed
+
+If you prefer working locally, the [Setup Guide](setup.qmd#optional-local-setup) has instructions using `uv` or `pip`.
+
+---
+
+### Is this course free?
+
+Yes. All materials (slides and notebooks) are free to use under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Google Colab and noncommercial Earth Engine use are free as well, within their usage limits.
+
+---
+
+## Setup & Account Issues
+
+### How do I get access to Google Earth Engine?
+
+Earth Engine now works through **Google Cloud projects**, and noncommercial use must be registered:
+
+1. Go to [code.earthengine.google.com/register](https://code.earthengine.google.com/register)
+2. Sign in with your Google account
+3. Choose **Unpaid usage** and the project type that fits (e.g. academic/research, non-profit)
+4. Create a Cloud project (note its **project ID**) and complete the noncommercial eligibility questionnaire
+5. Use that project ID in every notebook: `ee.Initialize(project="your-project-id")`
+
+::: {.callout-important}
+Register **at least a day before** you need it. It's usually ready within minutes, but verification can take longer.
+:::
+
+For step-by-step instructions, see the [Setup Guide](setup.qmd#step-3-google-earth-engine).
+
+---
+
+### My Earth Engine project doesn't work
+
+**Check:**
+1. The project is registered for Earth Engine: open the [Earth Engine page in the Cloud console](https://console.cloud.google.com/earth-engine)
+2. The noncommercial verification questionnaire is complete (projects registered before April 2025 had to re-verify by 26 September 2025)
+3. You signed in to `ee.Authenticate()` with the Google account that owns the project
+4. You passed the right ID to `ee.Initialize(project=...)` (the project **ID**, not its display name)
+
+More help: [Earth Engine access guide](https://developers.google.com/earth-engine/guides/access) and the [developer forum](https://groups.google.com/g/google-earth-engine-developers).
+
+---
+
+### Earth Engine says "Please set project ID" or "no project found"
+
+**Cause:** `ee.Initialize()` was called without a Cloud project, or the session was never authenticated.
+
+**Solution:**
+```python
+import ee
+
+ee.Authenticate()                               # sign in (Colab shows a pop-up)
+ee.Initialize(project="your-cloud-project-id")  # required in every session
+```
+
+Credentials are stored after the first sign-in, but `ee.Initialize(project=...)` must run in **every** new Colab session.
+
+---
+
+### Google Colab says "Runtime disconnected"
+
+**Causes:**
+- Inactivity (typically around 90 minutes)
+- Maximum session length (up to 12 hours on the free tier; GPU sessions are often shorter)
+- Browser tab closed or crashed
+
+**Solution:**
+1. Click **"Reconnect"** button
+2. Re-run setup cells (imports, authentication)
+3. Continue from where you left off
+
+::: {.callout-tip}
+**Prevent disconnections:**
+- Keep browser tab active
+- Save work to Google Drive regularly
+- Use `Ctrl/Cmd + S` to save notebooks
+:::
+
+---
+
+### How do I save my work in Google Colab?
+
+**Option 1: Save to Drive (Recommended)**
+```python
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Save outputs to Drive
+output_path = '/content/drive/My Drive/EO_AI_ML_Training/'
+```
+
+**Option 2: Download Files**
+- Click folder icon in left sidebar
+- Right-click file → Download
+
+**Option 3: Save Notebook**
+- `File → Save a copy in Drive`
+- `File → Download .ipynb`
+
+---
+
+## Python & Coding Issues
+
+### I'm getting "ModuleNotFoundError"
+
+**Example:** `ModuleNotFoundError: No module named 'geopandas'`
+
+**Cause:** Package not installed in current Colab session
+
+**Solution:**
+```python
+# Install the missing package
+!pip install geopandas
+
+# Then import it
+import geopandas as gpd
+```
+
+Most course packages (GeoPandas, Rasterio, the Earth Engine API, geemap, TensorFlow, PyTorch) are pre-installed in Colab. The ones you may need to install are `contextily`, `pystac-client` and `planetary-computer`.
+
+---
+
+### Package installation is failing
+
+**Error:** `ERROR: Could not find a version that satisfies the requirement...`
+
+**Solutions:**
+
+**1. Use `%pip` so the package goes into the running kernel:**
+```python
+%pip install -q geopandas
+```
+
+**2. Restart the session after upgrading a pre-installed package:**
+`Runtime → Restart session`, then re-run the notebook from the top.
+
+**3. Use conda (if local):**
+```bash
+conda install -c conda-forge geopandas
+```
+
+**4. Force reinstall:**
+```python
+!pip install --upgrade --force-reinstall geopandas
+```
+
+---
+
+### My code runs locally but fails in Colab
+
+**Common causes:**
+
+**1. File paths:**
+- Local: `C:/Users/name/data.shp`
+- Colab: `/content/data.shp` or from Drive
+
+**2. Package versions:**
+- Check versions: `import package; print(package.__version__)`
+- Install specific version if needed
+
+**3. Missing files:**
+- Upload files: Click folder icon → Upload
+- Or mount Google Drive
+
+---
+
+### "MemoryError" or "Kernel crashed"
+
+**Causes:**
+- Loading too much data
+- Processing large rasters
+- Insufficient RAM
+
+**Solutions:**
+
+**1. Reduce data scope:**
+```python
+# Read smaller window
+window = rasterio.windows.Window(0, 0, 1000, 1000)
+data = src.read(1, window=window)
+
+# Or downsample
+data = src.read(1, out_shape=(src.height // 4, src.width // 4))
+```
+
+**2. Use chunking:**
+```python
+# Process block by block
+for _, window in src.block_windows(1):
+    data = src.read(1, window=window)
+    process(data)
+```
+
+**3. Free memory:**
+- Delete large variables you no longer need (`del arr`) and restart the session if needed (a GPU runtime does not add system RAM for NumPy/Rasterio work)
+
+**4. Paid Colab plans:**
+- More memory, faster GPUs and longer sessions
+- [colab.research.google.com/signup](https://colab.research.google.com/signup)
+
+---
+
+## Earth Engine Issues
+
+### "User memory limit exceeded" in Earth Engine
+
+**Cause:** Trying to process too much data at once
+
+**Solutions:**
+
+**1. Increase scale parameter:**
+```python
+# Before (10m resolution)
+result = image.reduceRegion(
+    reducer=ee.Reducer.mean(),
+    geometry=roi,
+    scale=10  # 10m pixels
+)
+
+# After (100m resolution)
+result = image.reduceRegion(
+    reducer=ee.Reducer.mean(),
+    geometry=roi,
+    scale=100  # 100m pixels
+)
+```
+
+**2. Reduce region size:**
+```python
+# Smaller bounding box
+small_roi = ee.Geometry.Rectangle([120.0, 14.0, 120.5, 14.5])
+```
+
+**3. Filter dates more strictly:**
+```python
+# Shorter time period
+collection = collection.filterDate('2024-01-01', '2024-01-31')  # 1 month instead of 1 year
+```
+
+**4. Use maxPixels parameter:**
+```python
+task = ee.batch.Export.image.toDrive(
+    image=image,
+    scale=10,
+    maxPixels=1e13  # Allow more pixels
+)
+```
+
+---
+
+### Earth Engine export is stuck at "RUNNING"
+
+**Check status:**
+```python
+# Check task status
+print(task.status())
+```
+
+**Possible statuses:**
+- **READY:** Queued, waiting to start
+- **RUNNING:** Currently processing
+- **COMPLETED:** Successfully finished
+- **FAILED:** Error occurred (check status for details)
+
+**If stuck:**
+1. Wait - large exports can take hours
+2. Check [Earth Engine Task Manager](https://code.earthengine.google.com/tasks)
+3. Cancel and restart with smaller parameters
+4. Check Google Drive storage space
+
+---
+
+### Cloud-free composite still has clouds
+
+**Cause:** Cloud masking didn't work perfectly
+
+**Solutions:**
+
+**1. Use Cloud Score+ (recommended for Sentinel-2):**
+```python
+s2 = ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
+csp = ee.ImageCollection("GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED")
+
+def mask_clouds(img):
+    # cs_cdf: 0 = cloudy/shadow, 1 = clear; 0.6 is a common threshold
+    return img.updateMask(img.select("cs_cdf").gte(0.6))
+
+clear = (s2.filterBounds(roi)
+           .filterDate("2025-01-01", "2026-01-01")
+           .linkCollection(csp, ["cs_cdf"])
+           .map(mask_clouds))
+```
+
+Avoid the older `QA60` bitmask: it is coarse (60 m), and in Earth Engine it is masked out for images from 25 January 2022 to 28 February 2024, so a QA60-based mask silently removes every pixel of those images. The `SCL` band (classes 3 = cloud shadow, 8–10 = clouds/cirrus) is an alternative for surface reflectance (`S2_SR_HARMONIZED`) images.
+
+**2. Use a lower percentile instead of the median:**
+```python
+# 20th percentile: darker values, so fewer residual clouds (but more shadows)
+composite = collection.reduce(ee.Reducer.percentile([20]))
+```
+
+**3. Filter by cloud cover first:**
+```python
+collection = collection.filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 10))
+```
+
+---
+
+## Data & Visualization Issues
+
+### My map doesn't display in Colab
+
+**Cause:** Missing visualization library
+
+**Solution:**
+```python
+# geemap is pre-installed in Colab (otherwise: %pip install geemap)
+import geemap
+
+# Create map
+Map = geemap.Map()
+Map.centerObject(roi, 10)
+Map.addLayer(image, vis_params, 'Image')
+Map
+```
+
+---
+
+### Colors in my visualization look wrong
+
+**Check visualization parameters:**
+
+```python
+# For Sentinel-2 true color
+vis_params = {
+    'bands': ['B4', 'B3', 'B2'],  # Red, Green, Blue
+    'min': 0,
+    'max': 3000,  # Adjust based on your data
+    'gamma': 1.4
+}
+
+# For NDVI
+ndvi_vis = {
+    'min': -1,
+    'max': 1,
+    'palette': ['red', 'yellow', 'green']
+}
+```
+
+**Adjust min/max:**
+- Too dark → decrease max value
+- Too bright → increase max value
+- Washed out → adjust gamma
+
+---
+
+### GeoPandas plot shows nothing
+
+**Common issues:**
+
+**1. Empty GeoDataFrame:**
+```python
+print(len(gdf))  # Check if it has rows
+print(gdf.head())
+```
+
+**2. Wrong CRS:**
+```python
+print(gdf.crs)  # Check coordinate reference system
+gdf = gdf.to_crs('EPSG:4326')  # Reproject if needed
+```
+
+**3. Data outside visible area:**
+```python
+print(gdf.total_bounds)  # Check bounding box
+gdf.plot(figsize=(10, 10))  # Larger figure size
+```
+
+---
+
+### Rasterio shows "All-NaN slice encountered"
+
+**Cause:** Trying to visualize a band with all nodata values
+
+**Solution:**
+```python
+# Check for valid data
+print(f"Min: {band.min()}, Max: {band.max()}")
+print(f"Valid pixels: {np.count_nonzero(~np.isnan(band))}")
+
+# Mask nodata
+valid_mask = ~np.isnan(band)
+if valid_mask.any():
+    plt.imshow(band, cmap='gray')
+else:
+    print("No valid data in this band")
+```
+
+---
+
+## Philippine-Specific Questions
+
+### Where can I get Philippine administrative boundaries?
+
+**Sources:**
+
+1. **Humanitarian Data Exchange (HDX):** [Philippines administrative boundaries](https://data.humdata.org/dataset/cod-ab-phl)
+   - Open data, region to barangay level
+   - Shapefile, GeoJSON and other formats
+
+2. **Geoportal Philippines (NAMRIA):** [geoportal.gov.ph](https://geoportal.gov.ph)
+   - Official government source
+
+3. **In Earth Engine (geoBoundaries):**
+```python
+# Philippine regions (ADM1) from geoBoundaries
+ph_regions = (ee.FeatureCollection("WM/geoLab/geoBoundaries/600/ADM1")
+              .filter(ee.Filter.eq("shapeGroup", "PHL")))
+```
+(The older `FAO/GAUL/2015` collections are deprecated in the Earth Engine catalogue.)
+
+---
+
+### How do I get Sentinel data specifically for the Philippines?
+
+**In Google Earth Engine:**
+```python
+# Define Philippines bounding box
+philippines_bbox = ee.Geometry.Rectangle([116.0, 4.0, 127.0, 21.0])
+
+# Filter Sentinel-2 collection
+collection = ee.ImageCollection('COPERNICUS/S2_SR_HARMONIZED') \
+    .filterBounds(philippines_bbox) \
+    .filterDate('2024-01-01', '2024-12-31') \
+    .filter(ee.Filter.lt('CLOUDY_PIXEL_PERCENTAGE', 20))
+
+print(f"Found {collection.size().getInfo()} images")
+```
+
+**Via the Copernicus Data Space Ecosystem:**
+1. Open the [Copernicus Browser](https://browser.dataspace.copernicus.eu) (free account)
+2. Draw your area of interest
+3. Filter by mission, date and cloud cover
+4. Download products, or use the APIs for automated workflows
+
+**Via CopPhil (Philippine national access):**
+- The PhilSA-hosted [CopPhil infrastructure](https://infra.copphil.philsa.gov.ph) offers a Data Explorer, JupyterLab and S3 access to Sentinel data over the Philippines. See [Philippine EO Resources](philippine-eo.qmd).
+
+---
+
+### What are the best satellite data sources for Philippine disasters?
+
+**Floods:**
+- **Sentinel-1 SAR** (works through clouds)
+- **Planet Labs** (daily imagery, commercial)
+- **Landsat 8/9** (free, 16-day revisit each, 8 days combined)
+
+**Typhoons:**
+- **Sentinel-2** (damage assessment)
+- **MODIS** (rapid assessment)
+- **Himawari-9** (geostationary, near real-time; used by PAGASA)
+
+**Landslides:**
+- **PlanetScope** (3m resolution)
+- **Sentinel-2** (10m, change detection)
+- **LiDAR** (elevation, via LiPAD portal)
+
+**Drought:**
+- **MODIS** (vegetation indices, 8-day)
+- **Sentinel-2** (higher resolution)
+- **SMAP** (soil moisture)
+
+---
+
+## Training-Specific Questions
+
+### Can I get a certificate?
+
+No. This is a self-study edition of the course and it does not issue certificates.
+
+---
+
+### Will the materials stay available?
+
+Yes. The site and the [GitHub repository](https://github.com/anefelo/eo-ai-ml-training) stay online, and the materials are updated when libraries or data sources change.
+
+---
+
+### Can I share these materials with colleagues?
+
+Yes! All training materials are licensed under **Creative Commons BY-SA 4.0**, which means you can:
+
+- Share freely
+- Use for teaching
+- Modify and adapt
+- Use commercially
+
+**Requirements:**
+- Provide attribution: "EO AI/ML Training by Dimitrios Kasampalis (Anefelo)", with a link to the course and the licence
+- Share adaptations under the same licence
+
+Third-party data and images used in the materials keep their own licences.
+
+---
+
+### What does each day cover?
+
+**Day 1: EO data & AI/ML fundamentals**
+- Copernicus Sentinel missions and the Philippine EO ecosystem
+- AI/ML concepts, Python geospatial libraries, Google Earth Engine
+
+**Day 2: Machine learning for land cover classification**
+- Random forest, feature engineering, accuracy assessment
+- Palawan land cover case study
+- Neural network and CNN fundamentals, transfer learning
+
+**Day 3: Deep learning for segmentation and object detection**
+- U-Net semantic segmentation
+- Sentinel-1 flood mapping (Central Luzon)
+- Object detection (YOLO, Faster R-CNN) for buildings in Metro Manila
+
+**Day 4: Time series and emerging AI**
+- LSTMs for EO time series
+- Drought monitoring and forecasting (Mindanao)
+- Foundation models, self-supervised learning, explainable AI
+- Synthesis and next steps
+
+---
+
+## Technical Support
+
+### Where do I report a problem or an error in the materials?
+
+Thank you for helping improve the course!
+
+1. **GitHub Issues:** [open an issue](https://github.com/anefelo/eo-ai-ml-training/issues)
+2. **Email:** dimitris@anefelo.com
+
+**Please include:**
+- Which session/notebook
+- What the error is (copy the full error message)
+- Steps to reproduce
+- Your environment (Colab or local, Python version)
+
+---
+
+## Additional Resources
+
+### Where can I learn more about Earth Observation?
+
+**Online Courses:**
+- [EO College](https://eo-college.org/courses/): free EO and SAR courses
+- [NASA ARSET](https://www.earthdata.nasa.gov/data/projects/arset): applied remote sensing trainings
+- [CopPhil Digital Campus](https://courses.copphil.philsa.gov.ph): Copernicus courses with a Philippine focus
+- [Google Earth Engine Tutorials](https://developers.google.com/earth-engine/tutorials)
+
+**Books:**
+- *Remote Sensing and Image Interpretation*, Lillesand, Kiefer & Chipman (Wiley)
+- *Geoprocessing with Python*, Chris Garrard (Manning)
+- *Deep Learning for the Earth Sciences*, Camps-Valls, Tuia, Zhu & Reichstein (eds., Wiley)
+- [*Geocomputation with Python*](https://py.geocompx.org/) (free online)
+
+**Communities:**
+- [Google Earth Engine Developers](https://groups.google.com/g/google-earth-engine-developers)
+- [Stack Exchange GIS](https://gis.stackexchange.com/)
+- [r/gis](https://www.reddit.com/r/gis/)
+
+---
+
+### Where can I get help with Python programming?
+
+**Learning Resources:**
+- [Python.org Tutorial](https://docs.python.org/3/tutorial/)
+- [Real Python](https://realpython.com/)
+- [DataCamp](https://www.datacamp.com/)
+
+**Getting Help:**
+- [Stack Overflow](https://stackoverflow.com/)
+- [r/learnpython](https://www.reddit.com/r/learnpython/)
+
+---
+
+## Still Have Questions?
+
+::: {.callout-tip}
+## Can't find your answer?
+
+Open an issue on [GitHub](https://github.com/anefelo/eo-ai-ml-training/issues) or email [dimitris@anefelo.com](mailto:dimitris@anefelo.com).
+:::
+
+---
+
+*Last reviewed: November 2026.*

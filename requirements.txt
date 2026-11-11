@@ -1,0 +1,46 @@
+# EO AI/ML Training: Python dependencies for running the notebooks LOCALLY.
+# Google Colab is the primary environment and already ships almost all of these.
+# Tested target: Python 3.12 / 3.13. Lower bounds are the oldest versions with the APIs the notebooks use.
+#   uv venv --python 3.12 && uv pip install -r requirements.txt
+#   (or: python -m venv .venv && pip install -r requirements.txt)
+
+# Core scientific stack
+numpy>=1.26
+pandas>=2.1
+scipy>=1.11
+matplotlib>=3.8
+seaborn>=0.13
+tqdm>=4.66
+
+# Notebooks
+jupyterlab>=4.0
+ipykernel>=6.25
+nbformat>=5.9
+
+# Machine learning / image processing
+scikit-learn>=1.4
+scikit-image>=0.22
+
+# Deep learning
+# TensorFlow >= 2.16 ships Keras 3 (models saved as .keras; ImageDataGenerator is deprecated)
+tensorflow>=2.16
+keras>=3.0
+# torchvision >= 0.13 provides the weights= API used instead of pretrained=True
+torch>=2.2
+torchvision>=0.17
+
+# Geospatial
+rasterio>=1.4
+geopandas>=1.0
+pyogrio>=0.7.2
+shapely>=2.0
+pyproj>=3.6
+contextily>=1.5
+
+# Cloud data access
+# earthengine-api: use ee.Initialize(project="your-cloud-project")
+earthengine-api>=1.0
+geemap>=0.32
+folium>=0.15
+pystac-client>=0.7
+planetary-computer>=1.0

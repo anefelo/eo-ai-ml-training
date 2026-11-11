@@ -1,0 +1,11 @@
+# Excluded when this project is used as a template (quarto use template).
+# Website rendering is controlled by project.render in _quarto.yml.
+/scripts/
+/**/DIAGRAMS_CREATED.md
+/**/ENHANCEMENT_SUMMARY.md
+/**/IMAGE_PLACEHOLDERS.md
+/**/IMAGES_TO_SOURCE.md
+/**/IMPLEMENTATION_STATUS.md
+/**/INSTRUCTOR_GUIDE.md
+/**/NEXT_STEPS.md
+/**/presentations/README.md

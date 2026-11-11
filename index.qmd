@@ -1,0 +1,284 @@
+---
+title: "EO AI/ML Training"
+subtitle: "A 4-day course on AI/ML for Earth Observation, with Philippine case studies"
+author: "Dimitrios Kasampalis (Anefelo)"
+date: last-modified
+---
+
+::: {.hero}
+# EO AI/ML Training
+
+### A 4-day course on AI/ML for Earth Observation
+
+Hands-on machine learning and deep learning with Sentinel-1 and Sentinel-2 data, built around Philippine case studies in disaster risk reduction, climate change adaptation and natural resource management.
+:::
+
+## About This Course
+
+**EO AI/ML Training** is an open course on applying machine learning and deep learning to Earth Observation (EO) data. It was written for EO professionals in the Philippines, and every hands-on lab uses a Philippine case study, but the methods apply anywhere.
+
+::: {.callout-note}
+## Course Details
+
+**Author and instructor:** Dimitrios Kasampalis ([Anefelo](https://anefelo.com))
+**Format:** 4 days × 4 sessions: slide decks, session pages and Jupyter notebooks that run on Google Colab
+**Level:** Intermediate. Basic Python is assumed; EO and ML basics are covered on Day 1
+**History:** First delivered as a live online course in October 2025; materials revised and republished in November 2026
+**Licence:** [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+:::
+
+The case studies cover three application areas:
+
+- **Disaster Risk Reduction (DRR)**: Sentinel-1 flood mapping, building detection
+- **Climate Change Adaptation (CCA)**: drought monitoring and forecasting
+- **Natural Resource Management (NRM)**: land cover mapping, forest monitoring
+
+## Course Curriculum
+
+The course goes from EO data fundamentals to deep learning and time-series models. Each day builds on the previous one, and most sessions pair a short theory deck with a hands-on notebook.
+
+### Learning Journey
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-align: center
+graph LR
+    A[Day 1<br/>EO Data &<br/>Fundamentals] --> B[Day 2<br/>Machine<br/>Learning]
+    B --> C[Day 3<br/>Deep<br/>Learning]
+    C --> D[Day 4<br/>Time Series &<br/>Emerging AI]
+
+    style A fill:#003399,stroke:#003399,stroke-width:3px,color:#fff
+    style B fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,color:#495057
+    style C fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,color:#495057
+    style D fill:#f8f9fa,stroke:#dee2e6,stroke-width:2px,color:#495057
+```
+
+### What You'll Be Able to Do
+
+::: {.learning-objectives}
+**🎯 Work with EO data**: find, load and preprocess Sentinel-1 SAR and Sentinel-2 optical data with Python and Google Earth Engine, and know where Philippine EO data comes from (PhilSA, NAMRIA, DOST-ASTI, PAGASA, the CopPhil data infrastructure).
+
+**🤖 Build and evaluate models**: train random forest, CNN, U-Net, object detection and LSTM models for land cover classification, flood mapping, building detection and drought forecasting, and evaluate them with the right metrics.
+
+**🧭 Judge what works**: recognise common pitfalls (data leakage, class imbalance, spatial autocorrelation), and understand where foundation models and other emerging methods fit.
+
+**🌏 Apply it to real problems**: work through Philippine case studies: Palawan (land cover), Central Luzon (flood mapping), Metro Manila (urban object detection) and Mindanao (drought).
+:::
+
+### Daily Breakdown
+
+::: {.curriculum-timeline}
+::: {.day-section}
+<div class="day-header">
+<div class="day-number">01</div>
+<div class="day-info">
+<h3>EO Data & AI/ML Fundamentals</h3>
+<span class="duration"><i class="bi bi-clock"></i> 4 sessions</span>
+</div>
+</div>
+
+<div class="day-content">
+**What you'll learn:** Copernicus Sentinel missions • Philippine EO ecosystem (PhilSA, DOST-ASTI, NAMRIA) • AI/ML core concepts • Python geospatial libraries (GeoPandas, Rasterio) • Google Earth Engine
+
+**Hands-on practice:** Python geospatial data processing, Earth Engine data access, visualisation
+
+[Start Day 1 →](day1/index.qmd){.btn .btn-primary}
+</div>
+:::
+
+::: {.day-section}
+<div class="day-header">
+<div class="day-number">02</div>
+<div class="day-info">
+<h3>Machine Learning for EO</h3>
+<span class="duration"><i class="bi bi-clock"></i> 4 sessions</span>
+</div>
+</div>
+
+<div class="day-content">
+**What you'll learn:** Decision trees and random forest • Feature engineering with spectral indices • Accuracy assessment • Neural network and CNN fundamentals • Transfer learning
+
+**Hands-on practice:** Palawan land cover classification, model evaluation, feature importance, CNN image classification
+
+[Start Day 2 →](day2/index.qmd){.btn .btn-primary}
+</div>
+:::
+
+::: {.day-section}
+<div class="day-header">
+<div class="day-number">03</div>
+<div class="day-info">
+<h3>Deep Learning for EO</h3>
+<span class="duration"><i class="bi bi-clock"></i> 4 sessions</span>
+</div>
+</div>
+
+<div class="day-content">
+**What you'll learn:** U-Net semantic segmentation • Segmentation losses and metrics • Sentinel-1 SAR flood mapping (Central Luzon) • Object detection (YOLO, Faster R-CNN) and mAP
+
+**Hands-on practice:** U-Net flood mapping, building detection with a pre-trained detector
+
+[Start Day 3 →](day3/index.qmd){.btn .btn-primary}
+</div>
+:::
+
+::: {.day-section}
+<div class="day-header">
+<div class="day-number">04</div>
+<div class="day-info">
+<h3>Time Series & Emerging AI</h3>
+<span class="duration"><i class="bi bi-clock"></i> 4 sessions</span>
+</div>
+</div>
+
+<div class="day-content">
+**What you'll learn:** RNNs and LSTMs for EO time series • Drought monitoring and forecasting (Mindanao) • Foundation models for EO (e.g. Prithvi, Clay) • Self-supervised learning • Explainable AI
+
+**Hands-on practice:** NDVI time-series forecasting with LSTMs, drought early-warning lab, course synthesis
+
+[Start Day 4 →](day4/index.qmd){.btn .btn-primary}
+</div>
+:::
+:::
+
+## Prerequisites
+
+::: {.prereq-container}
+::: {.prereq-section .prereq-required}
+<div class="prereq-header">
+<i class="bi bi-check-circle-fill"></i>
+<h3>Required</h3>
+</div>
+
+<div class="prereq-content">
+**Technical setup:**
+
+- A Google account (for Colab and Earth Engine)
+- A Google Cloud project registered for [noncommercial Earth Engine use](https://developers.google.com/earth-engine/guides/access) (free; see the [Setup Guide](resources/setup.qmd))
+- Basic Python (variables, loops, functions)
+- A modern web browser
+
+::: {.callout-tip collapse="false"}
+## No installation needed
+All notebooks run in Google Colab. A local Python setup is optional and described in the [Setup Guide](resources/setup.qmd).
+:::
+</div>
+:::
+
+::: {.prereq-section .prereq-recommended}
+<div class="prereq-header">
+<i class="bi bi-star-fill"></i>
+<h3>Helpful Background</h3>
+</div>
+
+<div class="prereq-content">
+**Helpful knowledge:**
+
+- Basic remote sensing concepts (bands, resolution, sensors)
+- Some machine learning vocabulary
+- Experience with Jupyter notebooks
+
+::: {.callout-note collapse="false"}
+## New to EO or ML?
+Day 1 covers the foundations, so you can start there.
+:::
+</div>
+:::
+:::
+
+<div class="prereq-cta">
+<p><strong>Ready to start?</strong> The setup guide takes about 20 minutes.</p>
+[Setup Guide →](resources/setup.qmd){.btn .btn-primary .btn-lg}
+</div>
+
+## Course Resources
+
+::: {.feature-grid}
+::: {.resource-card}
+<i class="bi bi-gear-fill" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### Setup Guide
+Google Colab, Earth Engine project registration, and an optional local environment.
+
+[View Guide →](resources/setup.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+
+::: {.resource-card}
+<i class="bi bi-flag-fill" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### Philippine EO Resources
+Directory of Philippine EO agencies, data portals and platforms.
+
+[Explore Resources →](resources/philippine-eo.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+
+::: {.resource-card}
+<i class="bi bi-download" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### Course Materials
+Slide decks (online and PDF) and notebooks with "Open in Colab" links.
+
+[Materials →](resources/downloads.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+
+::: {.resource-card}
+<i class="bi bi-question-circle-fill" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### FAQ
+Common questions and troubleshooting for Colab, Earth Engine and Python.
+
+[Browse FAQ →](resources/faq.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+
+::: {.resource-card}
+<i class="bi bi-book-fill" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### Glossary
+Definitions of the EO, AI/ML and geospatial terms used in the course.
+
+[View Glossary →](resources/glossary.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+
+::: {.resource-card}
+<i class="bi bi-file-earmark-text-fill" style="font-size: 2.5rem; color: #003399; margin-bottom: 1rem;"></i>
+
+### Cheat Sheets
+Quick reference for Python, NumPy, GeoPandas, Rasterio and the Earth Engine Python API.
+
+[Get Cheat Sheets →](resources/cheatsheets.qmd){.btn .btn-outline-primary .btn-sm}
+:::
+:::
+
+## Getting Started
+
+::: {.callout-important}
+## How to use this course
+
+1. **Set up**: follow the [Setup Guide](resources/setup.qmd) (Google account, Colab, Earth Engine Cloud project)
+2. **Work through the days in order**: each day page lists its sessions, slide decks and notebooks
+3. **Run the notebooks**: open them in Colab from the session pages or the [Materials](resources/downloads.qmd) page
+4. **Stuck?** Check the [FAQ](resources/faq.qmd) and the [Glossary](resources/glossary.qmd)
+
+[Start with the Setup Guide →](resources/setup.qmd){.btn .btn-primary}
+[Jump to Day 1 →](day1/index.qmd){.btn .btn-outline-primary}
+:::
+
+## Questions, Corrections and Contact
+
+Found an error, a broken link or a notebook that no longer runs? Please open an issue on [GitHub](https://github.com/anefelo/eo-ai-ml-training/issues){target="_blank"} and include the session or notebook name, what you expected, and what happened (Colab or local).
+
+For anything else, contact the author at [dimitris@anefelo.com](mailto:dimitris@anefelo.com).
+
+## Licence and Reuse
+
+::: {.callout-note}
+## CC BY-SA 4.0
+
+The course text, slide decks and notebooks are © 2025–2026 Dimitrios Kasampalis and are licensed under the [Creative Commons Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/). You may share and adapt them, including for commercial use, as long as you give attribution ("EO AI/ML Training by Dimitrios Kasampalis, Anefelo") and share adaptations under the same licence.
+
+Third-party data, images and logos used in the materials (for example Copernicus Sentinel data, agency logos and screenshots) remain under their own terms; see the credits next to each item.
+:::
+
+## Acknowledgements
+
+The course uses modified Copernicus Sentinel data and openly available datasets and tools: Copernicus, ESA, Google Earth Engine, and the Philippine agencies whose data and published work inform the case studies (PhilSA, DOST-ASTI, NAMRIA, PAGASA and others). Their mention does not imply endorsement of this course.

@@ -1,0 +1,657 @@
+---
+title: "Session 4: Hands-on Object Detection from Sentinel Imagery"
+subtitle: "Urban Monitoring with Transfer Learning and Pre-trained Models"
+date: last-modified
+author: "Dimitrios Kasampalis"
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+---
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="../../index.html">Home</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <a href="../index.html">Day 3</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <span class="breadcrumb-current">Session 4</span>
+</nav>
+
+::: {.hero}
+# Hands-on Lab: Object Detection from Sentinel Imagery
+
+### Building Detection for Urban Monitoring in Metro Manila
+
+Apply transfer learning with pre-trained object detectors to identify buildings and settlements in satellite imagery
+:::
+
+## Lab Overview
+
+::: {.session-info}
+**Duration:** 2.5 hours | **Format:** Hands-on Coding Lab | **Platform:** Google Colab with GPU
+:::
+
+---
+
+This practical session demonstrates object detection for Earth observation using transfer learning. You'll walk through fine-tuning a COCO-pretrained detector (torchvision Faster R-CNN or Ultralytics YOLO) for buildings and settlement clusters, using Metro Manila as the case study. Transfer learning keeps annotation needs small, but the achievable accuracy depends heavily on image resolution (see the callout below).
+
+::: {.callout-important}
+## Lab format in this edition
+
+Session 4 is a **guided, instructor-led walkthrough**; there is **no dedicated Session 4 notebook** (and no annotated
+Metro Manila dataset) in the course repository. The code below uses current, verified APIs. To run a complete,
+working fine-tuning example end to end, use:
+
+- the official **PyTorch/torchvision object detection fine-tuning tutorial**
+  ([docs page with "Run in Google Colab"](https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html)), or
+- the **Ultralytics tutorial notebook**
+  ([open in Colab](https://colab.research.google.com/github/ultralytics/ultralytics/blob/main/examples/tutorial.ipynb)),
+  together with the small aerial dataset `dota8.yaml` used below.
+:::
+
+::: {.callout-warning}
+## What 10 m Sentinel-2 can and cannot detect
+
+At 10 m, one pixel covers 100 m²; most individual houses in Metro Manila are smaller than one or two pixels. Sentinel-2
+therefore supports **built-up area / settlement-cluster** mapping (often better done as segmentation) and detection of
+**large objects** (large buildings, warehouses, ships at sea), but **individual building detection requires
+very-high-resolution imagery (≲1 m)**, e.g. commercial optical data, aerial photos or drone imagery.
+:::
+
+::: {.learning-objectives}
+### Learning Objectives
+
+By the end of this lab, you will be able to:
+
+- **Understand** transfer learning for object detection in EO applications
+- **Load and configure** COCO-pretrained detectors from torchvision or Ultralytics
+- **Prepare** satellite imagery and annotations for object detection
+- **Fine-tune** pre-trained detectors on custom datasets
+- **Evaluate** model performance using mean Average Precision (mAP)
+- **Visualize** detected bounding boxes on satellite imagery
+- **Interpret** model predictions for urban monitoring
+- **Deploy** object detection for operational Philippine use cases
+:::
+
+## Presentation Slides
+
+<iframe src="../presentations/session4_object_detection_lab.html" width="100%" height="600" style="border: 1px solid #ccc; border-radius: 4px;"></iframe>
+
+---
+
+## Case Study: Metro Manila Building Detection
+
+::: {.callout-note}
+## Philippine Urban Monitoring Context
+
+**Location:** Metro Manila - National Capital Region (NCR)  
+**Focus Areas:** Quezon City and Pasig River corridor  
+**Challenge:** Rapid informal settlement growth and urban sprawl
+
+**Why This Matters:**
+Metro Manila's rapid urbanization creates challenges for:
+- **Disaster Risk Reduction** - Identifying vulnerable settlements in flood zones
+- **Urban Planning** - Monitoring informal settlements and infrastructure
+- **Population Estimation** - Building counts for demographic analysis
+- **Resource Allocation** - Targeting social services and infrastructure development
+
+**Data Source:** Sentinel-2 Multispectral Imagery
+- **Advantage:** Free, frequent (5-day revisit with two satellites) 10 m RGB + NIR with rich spectral information
+- **Limitation:** 10 m is coarse for individual buildings (see callout above)
+- **Bands Used:** RGB (B4, B3, B2) + NIR (B8) for enhanced detection
+:::
+
+### The Challenge
+
+Manual building delineation is time-consuming and inconsistent. Object detection with deep learning enables:
+- **Automated identification** of buildings from satellite imagery
+- **Rapid mapping** of large urban areas within hours
+- **Change detection** by comparing detections over time
+- **Scalable monitoring** for growing metropolitan regions
+- **Quantitative analysis** of urban expansion patterns
+
+---
+
+## Lab Workflow
+
+This hands-on lab follows a 7-step transfer learning workflow:
+
+```{mermaid}
+%%| fig-cap: "Object Detection Transfer Learning Workflow"
+%%| fig-width: 100%
+
+flowchart TD
+    A[1. Setup & Pre-trained Model] --> B[2. Load Practice Data]
+    B --> C[3. Data Preparation]
+    C --> D[4. Model Fine-tuning]
+    D --> E[5. Inference & Detection]
+    E --> F[6. Evaluation mAP]
+    F --> G[7. Visualization & Export]
+    
+    style A fill:#0066cc,stroke:#003d7a,stroke-width:2px,color:#fff
+    style D fill:#ff8800,stroke:#cc6600,stroke-width:2px,color:#fff
+    style G fill:#00aa44,stroke:#006622,stroke-width:2px,color:#fff
+```
+
+---
+
+## Prerequisites and Setup
+
+### Before You Begin
+
+::: {.callout-warning}
+## Required Setup
+
+**Platform:** Google Colab (free tier with GPU)
+
+**Checklist:**
+- [ ] Google account with access to Google Colab
+- [ ] Understanding of CNNs (from Day 2, Session 3)
+- [ ] Familiarity with object detection concepts (from Session 3)
+- [ ] Basic Python and PyTorch knowledge
+
+**Estimated Total Time:** 2.5 hours (including fine-tuning time)
+:::
+
+### Runnable Code
+
+There is no Session 4 notebook in this edition. Run the code below in a fresh Colab notebook, or use the
+[torchvision tutorial](https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html) /
+[Ultralytics tutorial](https://colab.research.google.com/github/ultralytics/ultralytics/blob/main/examples/tutorial.ipynb)
+notebooks for a complete end-to-end run.
+
+::: {.callout-tip}
+## Transfer Learning Advantage
+
+Instead of training from scratch (requires 10,000+ annotated images), we'll:
+1. Use a pre-trained detector (trained on COCO dataset with 330K images)
+2. Fine-tune on a small annotated dataset (a few hundred images)
+3. Get a useful model in well under an hour of GPU training
+
+**This is how real-world practitioners work with limited labeled data!**
+:::
+
+### Enable GPU
+
+::: {.callout-tip}
+## GPU Acceleration Required
+
+1. In Colab: **Runtime** → **Change runtime type**
+2. Select **Hardware accelerator:** GPU (T4 or better)
+3. Verify: Run `!nvidia-smi` to confirm GPU availability
+
+**Note:** GPU significantly speeds up fine-tuning (10x faster than CPU)
+:::
+
+---
+
+## Part 1: Understanding Transfer Learning for Object Detection (15 min)
+
+### What is Transfer Learning?
+
+**Concept:** Adapt a model pre-trained on a large dataset to your specific task with minimal additional training data.
+
+**Analogy:** Like a doctor specializing in cardiology after completing general medical training - the foundational knowledge transfers, requiring less time to specialize.
+
+**For Object Detection:**
+- Pre-trained model learned to detect 80 object classes on COCO dataset
+- Model already understands:
+  - What makes an object distinct from background
+  - How to propose bounding boxes
+  - How to classify regions
+- We adapt it to detect buildings/settlements in satellite imagery
+
+### Why Transfer Learning for Philippine EO?
+
+**Challenge:** Limited labeled satellite imagery
+- Annotation is expensive (bounding boxes take time)
+- Philippine-specific datasets are scarce
+- Small agencies can't afford large labeling efforts
+
+**Solution:** Transfer Learning
+- Start with pre-trained model (free, publicly available)
+- Fine-tune with a few hundred labelled images
+- Reach useful accuracy far faster than training from scratch (exact mAP depends on resolution, object size and label quality)
+- Training time: tens of minutes on a Colab GPU (vs. days from scratch)
+
+---
+
+## Part 2: Lab Exercises
+
+### Exercise 1: Load Pre-trained Model (20 min)
+
+**Objective:** Load a COCO-pretrained object detector
+
+**Models Available:**
+- **Faster R-CNN (MobileNetV3 or ResNet-50 FPN)** - torchvision; two-stage, strong on small objects
+- **SSDlite / RetinaNet / FCOS** - torchvision; single-stage alternatives
+- **YOLO (YOLOv8 / YOLO11 / YOLO26)** - Ultralytics; fast, simple training API; oriented-box (OBB) variants
+
+**Tasks:**
+```python
+# COCO-pretrained Faster R-CNN from torchvision (PyTorch 2.x weights API)
+import torch
+from torchvision.models.detection import (
+    fasterrcnn_mobilenet_v3_large_fpn, FasterRCNN_MobileNet_V3_Large_FPN_Weights)
+from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
+
+weights = FasterRCNN_MobileNet_V3_Large_FPN_Weights.DEFAULT   # replaces the old pretrained=True
+model = fasterrcnn_mobilenet_v3_large_fpn(weights=weights)
+print(weights.meta["categories"][:10])                         # the 91 COCO categories
+
+# Swap the box predictor for our classes: background + building
+in_features = model.roi_heads.box_predictor.cls_score.in_features
+model.roi_heads.box_predictor = FastRCNNPredictor(in_features, num_classes=2)
+```
+
+Alternative with Ultralytics (current family: YOLO26, January 2026):
+
+```python
+# pip install ultralytics   (AGPL-3.0 licence)
+from ultralytics import YOLO
+model = YOLO("yolo26n.pt")        # COCO-pretrained; use "yolo26n-obb.pt" for oriented boxes (DOTA-pretrained)
+results = model("https://ultralytics.com/images/bus.jpg")
+```
+
+**What You'll Learn:**
+- How to load pre-trained models
+- Understanding model input/output format
+- Visualizing detections before fine-tuning
+
+---
+
+### Exercise 2: Prepare Training Data (30 min)
+
+**Objective:** Load and prepare satellite imagery with building annotations
+
+**Data Format:**
+- Images: RGB patches (e.g. 512×512 pixels), ideally very-high-resolution for buildings
+- Annotations: COCO JSON format with bounding boxes
+  ```json
+  {
+    "images": [...],
+    "annotations": [
+      {
+        "image_id": 1,
+        "bbox": [x, y, width, height],
+        "category_id": 1,  // building
+        "area": 2500
+      }
+    ],
+    "categories": [{"id": 1, "name": "building"}]
+  }
+  ```
+
+**Tasks:**
+1. Load a practice dataset (e.g. `dota8.yaml`, or your own COCO export)
+2. Visualize images with bounding boxes
+3. Split data: 70% train, 15% validation, 15% test
+4. Convert to model's expected input format
+
+::: {.callout-note}
+## Data for this walkthrough
+
+No annotated Metro Manila dataset ships with the course. Options for practice:
+
+- **`dota8.yaml`** (Ultralytics): 8 aerial images, downloads automatically — enough to exercise the full loop
+- **[DOTA](https://captain-whu.github.io/DOTA/)**, **[xView](https://xviewdataset.org/)**, **[SpaceNet](https://spacenet.ai/)**: larger public overhead-imagery detection datasets
+- **Your own data:** annotate tiles in CVAT or Label Studio and export COCO JSON; OpenStreetMap building footprints can bootstrap labels (check completeness locally)
+:::
+
+---
+
+### Exercise 3: Fine-tune Model (40 min)
+
+**Objective:** Adapt the pre-trained detector to recognize buildings in satellite imagery
+
+**Fine-tuning Strategy:**
+- Freeze early layers (keep general feature extractors)
+- Train only the detection head (bounding box prediction)
+- Use small learning rate (0.0001-0.001)
+- Train for 10-30 epochs
+
+**Tasks:**
+```python
+# Fine-tuning loop for the torchvision model above.
+# train_loader yields (images, targets): images = list of [3,H,W] float tensors in [0,1];
+# targets = list of {"boxes": FloatTensor[N,4] in (x1,y1,x2,y2) pixels, "labels": Int64Tensor[N]}
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model.to(device)
+
+# Optional: freeze the backbone, train only the RPN and box heads
+for p in model.backbone.parameters():
+    p.requires_grad = False
+
+params = [p for p in model.parameters() if p.requires_grad]
+optimizer = torch.optim.SGD(params, lr=0.005, momentum=0.9, weight_decay=5e-4)
+
+for epoch in range(20):
+    model.train()
+    for images, targets in train_loader:
+        images = [img.to(device) for img in images]
+        targets = [{k: v.to(device) for k, v in t.items()} for t in targets]
+        loss_dict = model(images, targets)          # classifier, box_reg, objectness, rpn_box_reg
+        loss = sum(loss_dict.values())
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    print(f"Epoch {epoch}: loss = {loss.item():.4f}")
+```
+
+With Ultralytics the whole loop is one call; `dota8.yaml` is a tiny 8-image aerial dataset that downloads automatically, ideal for a first run:
+
+```python
+model = YOLO("yolo26n-obb.pt")
+model.train(data="dota8.yaml", epochs=20, imgsz=640)   # replace with your own dataset YAML
+```
+
+**What You'll Observe:**
+- Training loss decreases over epochs
+- Validation loss plateaus (indicates convergence)
+- Typical fine-tuning time: 30-45 minutes on Colab GPU
+
+---
+
+### Exercise 4: Evaluate with mAP (25 min)
+
+**Objective:** Calculate mean Average Precision (mAP) - the standard object detection metric
+
+**What is mAP?**
+- **Precision:** Of detected buildings, how many are correct?
+- **Recall:** Of all actual buildings, how many did we detect?
+- **Average Precision (AP):** Area under precision-recall curve
+- **mAP:** Mean AP across all classes (here, just "building")
+
+**IoU Threshold:**
+- Detection "correct" if IoU (Intersection over Union) ≥ 0.5
+- IoU = (Area of Overlap) / (Area of Union)
+
+**Tasks:**
+```python
+# mAP with torchmetrics (pip install torchmetrics pycocotools)
+from torchmetrics.detection import MeanAveragePrecision
+metric = MeanAveragePrecision(iou_type="bbox")
+model.eval()
+with torch.no_grad():
+    for images, targets in test_loader:
+        preds = model([img.to(device) for img in images])
+        metric.update([{k: v.cpu() for k, v in p.items()} for p in preds], targets)
+results = metric.compute()
+print(f"mAP@0.5: {results['map_50']:.3f}   mAP@[0.5:0.95]: {results['map']:.3f}")
+```
+
+With Ultralytics: `metrics = model.val(); print(metrics.box.map50)` (works for both detection and OBB models).
+
+**What to expect:**
+- **Before fine-tuning:** near-zero mAP for "building" (COCO has no building class)
+- **After fine-tuning:** strongly dependent on resolution and labels; on sub-metre imagery published building
+  detectors typically reach mAP@0.5 in the 0.5–0.8 range, on 10 m Sentinel-2 individual buildings are not reliably detectable
+
+---
+
+### Exercise 5: Visualize Detections (20 min)
+
+**Objective:** Visualize model predictions on Metro Manila satellite imagery
+
+**Tasks:**
+1. Run inference on test images
+2. Draw bounding boxes with confidence scores
+3. Compare before/after fine-tuning
+4. Analyze false positives and false negatives
+
+**Visualization Code:**
+```python
+# Draw detections above a confidence threshold
+from torchvision.utils import draw_bounding_boxes
+import matplotlib.pyplot as plt
+
+model.eval()
+with torch.no_grad():
+    pred = model([image.to(device)])[0]          # image: [3,H,W] float tensor in [0,1]
+keep = pred["scores"] > 0.5
+canvas = draw_bounding_boxes((image * 255).byte(), pred["boxes"][keep].cpu(),
+                             labels=[f"building {s:.2f}" for s in pred["scores"][keep]], colors="red")
+plt.imshow(canvas.permute(1, 2, 0)); plt.axis("off")
+plt.title("Building detection (example)"); plt.show()
+```
+
+**Analysis:**
+- Count detected buildings per image
+- Compare against ground truth
+- Identify challenging cases (dense urban areas, shadows)
+
+---
+
+## Part 3: Metro Manila Urban Monitoring Applications (15 min)
+
+### Operational Use Cases
+
+**1. Informal Settlement Mapping**
+- **Application:** Identify unplanned settlements in flood-prone areas
+- **Stakeholder:** NDRRMC, Local Government Units (LGUs)
+- **Output:** Building density maps, population estimates
+
+**2. Urban Growth Monitoring**
+- **Application:** Track new construction over time
+- **Method:** Compare detections from multi-temporal imagery
+- **Output:** Change maps showing urban expansion hotspots
+
+**3. Disaster Impact Assessment**
+- **Application:** Post-typhoon damage assessment
+- **Method:** Detect changes in building footprints (collapsed structures)
+- **Output:** Damage severity maps for relief operations
+
+**4. Infrastructure Planning**
+- **Application:** Identify under-served areas (low building density)
+- **Stakeholder:** DPWH, MMDA
+- **Output:** Priority areas for infrastructure development
+
+### Deployment Workflow
+
+```{mermaid}
+%%| fig-cap: "Operational Deployment Pipeline"
+%%| fig-width: 100%
+
+flowchart LR
+    A[Sentinel-2 API] --> B[Pre-processing]
+    B --> C[Object Detection Model]
+    C --> D[Post-processing]
+    D --> E[GIS Export]
+    E --> F[Stakeholder Dashboard]
+    
+    style A fill:#0066cc,color:#fff
+    style C fill:#ff8800,color:#fff
+    style F fill:#00aa44,color:#fff
+```
+
+**Steps:**
+1. Automated download from Copernicus/GEE
+2. Cloud masking and atmospheric correction
+3. Tile into model input size
+4. Run detection inference
+5. Merge tiles and export to GeoJSON/Shapefile
+6. Integrate with QGIS/ArcGIS for analysis
+
+---
+
+## Part 4: Beyond the Lab - Production Considerations (10 min)
+
+### Real Data Acquisition
+
+**For Production Deployment:**
+
+1. **Acquire Sentinel-2 Imagery:**
+   - Google Earth Engine (free, cloud-based)
+   - Copernicus Data Space Ecosystem
+   - CopPhil Mirror Site (Copernicus data archive over the Philippines, hosted by PhilSA; see [copphil.philsa.gov.ph](https://copphil.philsa.gov.ph/))
+
+2. **Create Annotations:**
+   - Manual: RoboFlow, CVAT, Label Studio
+   - Semi-automated: Use model predictions + human review
+   - Crowdsourced: Engage local communities
+
+3. **Quality Control:**
+   - Ensure consistent annotation guidelines
+   - Review inter-annotator agreement
+   - Validate with field surveys where possible
+
+### Model Improvement Strategies
+
+**To increase accuracy:**
+- Add more training samples (500-1000 recommended)
+- Use multi-temporal imagery (seasonal variations)
+- Ensemble multiple models (e.g. YOLO + Faster R-CNN)
+- Post-process with building footprint databases
+
+**To handle challenges:**
+- **Dense urban areas:** Use higher resolution imagery (Pléiades, SPOT)
+- **Cloud cover:** Combine Sentinel-2 with Sentinel-1 SAR
+- **Small buildings:** Use tiling / higher input resolution and a small-object-friendly detector (e.g. Faster R-CNN with FPN, recent YOLO)
+
+---
+
+## Part 5: Lab Summary and Next Steps (10 min)
+
+### What You've Accomplished
+
+::: {.callout-tip}
+## Key Achievements
+
+✅ Loaded COCO-pretrained detectors with the current torchvision / Ultralytics APIs  
+✅ Understood annotation formats and data requirements (and the limits of 10 m imagery)  
+✅ Walked through fine-tuning a detector on a new class  
+✅ Evaluated performance using mAP metrics  
+✅ Visualized detections  
+✅ Connected detection to Philippine urban monitoring applications
+:::
+
+### Comparison with Session 2 (Flood Mapping)
+
+| Aspect | Session 2 (Segmentation) | Session 4 (Object Detection) |
+|--------|-------------------------|------------------------------|
+| **Task** | Pixel-wise classification | Object localization + classification |
+| **Output** | Binary flood mask | Bounding boxes + labels |
+| **Metric** | IoU, F1-score | mAP, Precision, Recall |
+| **Use Case** | Flood extent mapping | Building counting, urban growth |
+| **Data** | Sentinel-1 SAR | Sentinel-2 Optical |
+
+**Both are complementary!**
+- Use segmentation for continuous phenomena (floods, vegetation)
+- Use object detection for discrete objects (buildings, vehicles)
+
+---
+
+## Resources and Further Learning
+
+### Documentation
+
+- **PyTorch Detection Fine-tuning Tutorial:** [PyTorch Docs](https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html)
+- **Ultralytics YOLO docs:** [docs.ultralytics.com](https://docs.ultralytics.com/) (training, OBB, export)
+- **COCO detection evaluation (mAP):** [cocodataset.org](https://cocodataset.org/#detection-eval)
+
+### Pre-trained Models
+
+- **torchvision detection models:** [model list with COCO weights](https://docs.pytorch.org/vision/stable/models.html#object-detection-instance-segmentation-and-person-keypoint-detection)
+- **Ultralytics YOLO:** [github.com/ultralytics/ultralytics](https://github.com/ultralytics/ultralytics) (AGPL-3.0)
+- **Kaggle Models** (former TensorFlow Hub): TF detection models, mostly legacy
+
+### Philippine EO Resources
+
+- **CopPhil Mirror Site / Copernicus Data Space Ecosystem:** Sentinel-2 data over the Philippines ([copphil.philsa.gov.ph](https://copphil.philsa.gov.ph/), [dataspace.copernicus.eu](https://dataspace.copernicus.eu/))
+- **NAMRIA Geoportal:** Administrative boundaries for Metro Manila ([geoportal.gov.ph](https://geoportal.gov.ph/))
+- **OpenStreetMap Philippines:** Building footprints for validation
+
+---
+
+## Troubleshooting Guide
+
+### Common Issues
+
+**Issue 1: Out of Memory (OOM) during training**
+- **Solution:** Reduce batch size (try 4 or 8)
+- **Solution:** Use smaller input image size (320x320 instead of 512x512)
+- **Solution:** Restart runtime and clear outputs
+
+**Issue 2: mAP is very low (<0.30)**
+- **Cause:** Model not fine-tuned enough
+- **Solution:** Train for more epochs (30-50)
+- **Solution:** Check if annotations are correct
+- **Solution:** Increase learning rate slightly (0.001)
+
+**Issue 3: Model detects everything as buildings**
+- **Cause:** Confidence threshold too low
+- **Solution:** Increase threshold from 0.3 to 0.5-0.7
+- **Solution:** Add negative examples (non-building areas) to training
+
+**Issue 4: Training is very slow**
+- **Check:** GPU is enabled (Runtime → Change runtime type)
+- **Solution:** Use a lighter model (Faster R-CNN MobileNetV3, YOLO nano) instead of Faster R-CNN ResNet-50
+- **Solution:** Reduce number of training samples (use subset)
+
+---
+
+## Assessment and Deliverables
+
+### Self-Assessment Checklist
+
+By the end of this lab, you should be able to:
+
+- [ ] Explain transfer learning for object detection
+- [ ] Load a COCO-pretrained detector (torchvision `weights=` API or Ultralytics)
+- [ ] Prepare annotations in COCO format
+- [ ] Fine-tune a detector on custom satellite imagery
+- [ ] Calculate and interpret mAP metrics
+- [ ] Visualize bounding box detections
+- [ ] Apply object detection to Philippine urban monitoring
+
+### Optional Extensions (If Time Permits)
+
+**Advanced Exercise 1:** Multi-class detection
+- Add "informal settlement" as a second class
+- Train model to distinguish formal vs informal buildings
+
+**Advanced Exercise 2:** Change detection
+- Load imagery from two time periods (e.g., 2020 vs 2024)
+- Compare building counts to quantify urban growth
+
+**Advanced Exercise 3:** Anchor box optimization
+- Analyze building size distribution in Metro Manila
+- Customize anchor boxes for typical building sizes
+
+---
+
+## Conclusion
+
+Object detection is a powerful tool for operational Earth observation. By leveraging transfer learning, even small teams with limited annotation budgets can build production-quality detectors for Philippine-specific applications.
+
+**Key Takeaways:**
+1. Transfer learning dramatically reduces data and training time requirements
+2. Pre-trained models provide strong baselines for fine-tuning
+3. mAP is the standard metric for object detection evaluation
+4. Object detection enables scalable urban monitoring for disaster preparedness
+
+**Next Steps:**
+- Apply this workflow to your own area of interest
+- Work with PhilSA, NAMRIA or LGUs to obtain local reference data and annotations
+- Integrate detections with GIS workflows
+- Monitor urban changes over time using Sentinel-2 time series
+
+---
+
+::: {.callout-important}
+## Ready to Start the Lab?
+
+**Open a fresh Colab notebook and follow the exercises above**, or start from a complete reference notebook:
+
+- [torchvision object detection tutorial](https://docs.pytorch.org/tutorials/intermediate/torchvision_tutorial.html)
+- [Ultralytics tutorial notebook (Colab)](https://colab.research.google.com/github/ultralytics/ultralytics/blob/main/examples/tutorial.ipynb)
+
+**Estimated completion time:** 2-2.5 hours
+
+**Questions?** Refer to the FAQ or ask your instructor during the session.
+:::
+
+---
+
+*Session 4: Hands-on Object Detection — EO AI/ML Training (4 days).*

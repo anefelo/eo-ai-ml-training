@@ -1,0 +1,153 @@
+---
+title: "Notebook 2: Google Earth Engine"
+subtitle: "Cloud-based Earth Observation Data Processing"
+date: last-modified
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Session 4 Hands-On Notebook
+
+This notebook accompanies **Session 4: Introduction to Google Earth Engine**. You will use the Earth Engine Python API to find, cloud-mask, composite and export Sentinel-2 and Sentinel-1 data over the Philippines, and prepare a feature stack for machine learning.
+
+### Learning Objectives
+
+By completing this notebook, you will:
+
+- Authenticate and initialise Earth Engine with your own Cloud project
+- Use Geometry, Image, ImageCollection, Feature and FeatureCollection objects
+- Filter Sentinel-2 and Sentinel-1 collections by place, time and metadata
+- Mask clouds with **Cloud Score+** and build median composites
+- Calculate NDVI and summarise it over an area with reducers
+- Export images and sample tables to Google Drive for ML workflows
+- Build a multi-sensor feature stack and preview a Random Forest classification
+
+---
+
+## Getting Started
+
+### Open in Google Colab (Recommended)
+
+<a href="https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day1/notebooks/Day1_Session4_Google_Earth_Engine.ipynb" target="_blank">
+  <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
+</a>
+
+::: {.callout-important}
+## Earth Engine Cloud Project Required
+Earth Engine needs a Google Cloud project registered for Earth Engine (free for non-commercial use: education, research, government). Register at <https://code.earthengine.google.com/register>, note your **Project ID**, and set it in the first code cell:
+
+```python
+ee.Authenticate()
+ee.Initialize(project="your-cloud-project")
+```
+
+Registration is usually immediate. See also the [Setup Guide](../../resources/setup.qmd).
+:::
+
+::: {.download-box}
+**Download Option:**
+
+[Download .ipynb File](Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-primary download="Day1_Session4_Google_Earth_Engine.ipynb"}
+
+**Requirements for local use:** `pip install earthengine-api geemap` (geemap is optional, for interactive maps)
+:::
+
+---
+
+## Notebook Contents
+
+1. **Setup and authentication** — Cloud project, `ee.Authenticate()`, `ee.Initialize(project=...)`, troubleshooting table
+2. **Core concepts** — geometries, images and collections, features, filters and reducers
+3. **Sentinel-2** — Puerto Princesa (Palawan) dry-season 2024 collection, Cloud Score+ masking, median composite, true/false colour thumbnails, optional geemap map, NDVI statistics
+4. **Sentinel-1 SAR** — IW mode, VV+VH, single orbit direction; temporal mean; VV−VH ratio in dB
+5. **Exports** — image to Google Drive in UTM (EPSG:32650), task monitoring, sample points as CSV
+6. **From GEE to ML** — optical + NDVI + SAR feature stack; `sampleRegions`; Random Forest preview (Day 2 goes deeper)
+7. **Best practices** — efficiency, quotas, GEE vs local processing, common errors
+8. **Exercises** — another place and season; VV vs VH; export your own composite (solutions hidden in each exercise)
+
+**Time:** about 2 hours.
+
+::: {.callout-note}
+## Why Cloud Score+ instead of QA60?
+In Earth Engine the classic `QA60` cloud bitmask is empty from 25 January 2022 to 28 February 2024, so QA60-based masks remove every pixel in that period. The notebook uses Google's Cloud Score+ product (`GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED`), which also handles cloud shadows. The Sentinel-2 Scene Classification Layer (`SCL`) is a good alternative (see Session 1).
+:::
+
+---
+
+## Prerequisites
+
+- Earth Engine Cloud project registered (see above)
+- Completed [Notebook 1: Python for Geospatial Data](notebook1.qmd)
+- Basic Python knowledge and familiarity with Jupyter/Colab
+
+---
+
+## Key Code Pattern
+
+```python
+import ee
+ee.Initialize(project="your-cloud-project")
+
+aoi = ee.Geometry.Rectangle([118.4, 9.5, 119.0, 10.1])     # Puerto Princesa, Palawan
+cs_plus = ee.ImageCollection("GOOGLE/CLOUD_SCORE_PLUS/V1/S2_HARMONIZED")
+
+composite = (ee.ImageCollection("COPERNICUS/S2_SR_HARMONIZED")
+             .filterBounds(aoi)
+             .filterDate("2024-01-01", "2024-04-30")
+             .filter(ee.Filter.lt("CLOUDY_PIXEL_PERCENTAGE", 60))
+             .linkCollection(cs_plus, ["cs_cdf"])
+             .map(lambda img: img.updateMask(img.select("cs_cdf").gte(0.6)))
+             .median()
+             .clip(aoi))
+
+ndvi = composite.normalizedDifference(["B8", "B4"]).rename("NDVI")
+```
+
+---
+
+## Common Errors & Solutions
+
+| Error | Fix |
+|---|---|
+| `ee.Initialize: no project found` / project not registered | Pass `project=` and register the project for Earth Engine |
+| `User memory limit exceeded` | Reduce the area or use a coarser `scale`; export instead of `.getInfo()` |
+| `Collection.first: No matching elements` | No images match: check dates, AOI and cloud filter |
+| `Too many concurrent aggregations` | Fewer simultaneous requests; use `.limit()` while testing |
+
+See the [FAQ](../../resources/faq.qmd) for more troubleshooting help.
+
+---
+
+## Related Resources
+
+::: {.resource-links}
+**Session Materials:**
+- [Session 4: Introduction to Google Earth Engine](../sessions/session4.qmd)
+- [Session 4 Presentation Slides](../presentations/04_session4_google_earth_engine.html)
+
+**Quick References:**
+- [Cheat Sheets](../../resources/cheatsheets.qmd)
+
+**Official Documentation:**
+- [Earth Engine Python API Guide](https://developers.google.com/earth-engine/guides/python_install)
+- [Earth Engine Data Catalog](https://developers.google.com/earth-engine/datasets)
+- [Cloud Score+ dataset](https://developers.google.com/earth-engine/datasets/catalog/GOOGLE_CLOUD_SCORE_PLUS_V1_S2_HARMONIZED)
+- [geemap Documentation](https://geemap.org/)
+
+**Community Resources:**
+- [Awesome Earth Engine](https://github.com/opengeos/Awesome-GEE)
+- [Earth Engine Tutorials](https://developers.google.com/earth-engine/tutorials)
+- [GEE Developers Forum](https://groups.google.com/g/google-earth-engine-developers)
+:::
+
+---
+
+## Next Steps
+
+After completing this notebook:
+
+1. ✅ Practice with other Philippine regions and seasons
+2. ✅ Experiment with other datasets (Landsat, ESA WorldCover, Dynamic World)
+3. ✅ Prepare for Day 2: Machine Learning for Land Cover Classification (Palawan)

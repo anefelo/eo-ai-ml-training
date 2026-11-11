@@ -1,0 +1,28 @@
+# Quarto
+/.quarto/
+**/*.quarto_ipynb
+/_site/
+# Execution freeze directory (execution is disabled for this site; ignore if created locally)
+/_freeze/
+
+# PowerPoint exports (not tracked)
+/pptx/
+
+# Python environments (local runs; Colab is the primary environment)
+/venv/
+/.venv/
+*.pyc
+__pycache__/
+.ipynb_checkpoints/
+
+# Local notes
+github_releases_links.txt
+
+# OS / editor junk
+.DS_Store
+._*
+
+# LaTeX / logs
+*.aux
+*.log
+*.tex

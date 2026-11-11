@@ -1,0 +1,344 @@
+---
+title: "Day 4: Time Series Analysis, Emerging Trends, and Sustainable Learning"
+subtitle: "LSTMs, Foundation Models, and Your Path Forward"
+date: last-modified
+---
+
+<nav class="breadcrumb" aria-label="Breadcrumb">
+  <a href="../index.html">Home</a>
+  <span class="breadcrumb-separator" aria-hidden="true">›</span>
+  <span class="breadcrumb-current">Day 4: Time Series & Emerging Trends</span>
+</nav>
+
+::: {.hero}
+# Day 4: Time Series Analysis, Emerging Trends, and Sustainable Learning
+
+### Master LSTMs, Explore Foundation Models, and Join the Community
+
+The final day brings advanced techniques, cutting-edge trends, and your roadmap for continued success
+:::
+
+## Day 4 Overview
+
+Welcome to the final day of the EO AI/ML Training! Today you'll master **Long Short-Term Memory (LSTM) networks** for time series forecasting, explore **emerging AI trends** (Foundation Models, Self-Supervised Learning, Explainable AI), and synthesize everything you've learned with a clear path forward.
+
+::: {.callout-important}
+## What Makes Day 4 Special
+
+- **LSTMs in Action:** Build a complete drought forecasting system for Mindanao agriculture
+- **Emerging AI:** Discover geospatial foundation models and embedding datasets that reduce how much labelled data you need
+- **Explainability:** Learn to interpret and trust your AI models with XAI techniques
+- **Course Synthesis:** Bring together all 4 days with best practices and next steps
+- **Community Building:** Join the Philippine EO AI ecosystem and continue learning
+:::
+
+## Learning Objectives
+
+By the end of Day 4, you will be able to:
+
+::: {.learning-objectives}
+- **Understand** time series fundamentals and sequential patterns in satellite data
+- **Explain** RNN architecture, vanishing gradient problem, and LSTM solutions
+- **Implement** LSTM networks in TensorFlow/Keras (Session 1) and PyTorch (Session 2)
+- **Retrieve** monthly Sentinel-2 NDVI time series with Google Earth Engine
+- **Build** an end-to-end NDVI forecasting and drought-alert workflow for agricultural monitoring
+- **Apply** LSTMs to Mindanao agriculture drought early warning scenarios
+- **Train** sequence models with temporal validation strategies
+- **Evaluate** time series forecasts with MAE and RMSE against simple baselines
+- **Describe** current geospatial foundation models (Prithvi-EO-2.0, Clay, TerraMind, Copernicus-FM, DOFA) and embedding datasets (AlphaEarth Satellite Embedding, Tessera, OlmoEarth)
+- **Explain** how pre-trained models and embeddings reduce labelled-data requirements, and when they do not
+- **Explain** self-supervised learning (masked autoencoding, contrastive learning) for unlabelled satellite archives
+- **Describe** what on-board AI can do today (Φsat-2, foundation models in orbit)
+- **Use** explainable AI methods (SHAP, LIME, Grad-CAM) to interpret model decisions
+- **Generate** saliency maps and feature importance visualizations for stakeholder communication
+- **Synthesize** all techniques from Days 1-4 into cohesive operational workflows
+- **Select** appropriate AI/ML methods based on task, data availability, and computational resources
+- **Deploy** best practices for model validation, monitoring, and maintenance in production
+- **Find** Philippine EO data platforms and further learning resources
+- **Design** an actionable 3-month roadmap for implementing AI/ML in your organization
+:::
+
+## Today's Schedule
+
+| Time | Session | Topic | Materials |
+|------|:-------:|-------|-----------|
+| 09:00-10:30 | **[1](sessions/session1.qmd)** | LSTMs for EO Time Series | Theory + [Demo notebook](notebooks/day4_session1_lstm_demo_STUDENT.ipynb) |
+| 10:30-13:00 | **[2](sessions/session2.qmd)** | LSTM Drought Monitoring Lab | [Hands-on Lab](notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb) |
+| 14:00-16:00 | **[3](sessions/session3.qmd)** | Emerging AI Trends in EO | Theory + Discussion |
+| 16:00-18:00 | **[4](sessions/session4.qmd)** | Synthesis & Next Steps | Course Wrap-up |
+
+## Training Sessions
+
+::: {.feature-grid}
+::: {.feature-card-enhanced}
+::: {.card-icon}
+<i class="bi bi-graph-up-arrow"></i>
+:::
+
+### Session 1
+**LSTMs for EO Time Series**
+
+<div class="card-meta">
+<span class="status-badge status-complete">Available</span>
+<span class="card-duration"><i class="bi bi-clock"></i> 1.5 hours</span>
+</div>
+
+- Time series fundamentals
+- RNN architecture and limitations
+- LSTM gates and memory
+- Philippine drought context
+- Interactive demos
+
+[Start Session 1 <i class="bi bi-arrow-right"></i>](sessions/session1.qmd){.btn .btn-start}
+:::
+
+::: {.feature-card-enhanced}
+::: {.card-icon}
+<i class="bi bi-cloud-drizzle"></i>
+:::
+
+### Session 2
+**LSTM Drought Monitoring Lab**
+
+<div class="card-meta">
+<span class="status-badge status-complete">Available</span>
+<span class="card-duration"><i class="bi bi-clock"></i> 2.5 hours</span>
+</div>
+
+- Multi-variate LSTM modeling
+- Mindanao agriculture case study
+- Training and validation
+- Operational forecasting
+- Deployment framework
+
+[Start Session 2 <i class="bi bi-arrow-right"></i>](sessions/session2.qmd){.btn .btn-start}
+:::
+
+::: {.feature-card-enhanced}
+::: {.card-icon}
+<i class="bi bi-stars"></i>
+:::
+
+### Session 3
+**Emerging AI Trends in EO**
+
+<div class="card-meta">
+<span class="status-badge status-complete">Available</span>
+<span class="card-duration"><i class="bi bi-clock"></i> 2 hours</span>
+</div>
+
+- Foundation models (Prithvi, Clay, TerraMind)
+- Embedding datasets
+- On-board AI
+- Self-supervised learning
+- Explainable AI (XAI)
+
+[Start Session 3 <i class="bi bi-arrow-right"></i>](sessions/session3.qmd){.btn .btn-start}
+:::
+
+::: {.feature-card-enhanced}
+::: {.card-icon}
+<i class="bi bi-lightbulb"></i>
+:::
+
+### Session 4
+**Synthesis & Next Steps**
+
+<div class="card-meta">
+<span class="status-badge status-complete">Available</span>
+<span class="card-duration"><i class="bi bi-clock"></i> 2 hours</span>
+</div>
+
+- 4-day journey recap
+- Best practices for deployment
+- Philippine EO platforms and resources
+- Continued learning
+- Your action plan
+
+[Start Session 4 <i class="bi bi-arrow-right"></i>](sessions/session4.qmd){.btn .btn-start}
+:::
+:::
+
+---
+
+## Session Summaries
+
+### Session 1: LSTMs for Earth Observation Time Series (1.5 hours)
+
+Master the fundamentals of Long Short-Term Memory networks for analyzing temporal satellite data.
+
+**Topics Covered:**
+- Time series data in Earth Observation (NDVI, SAR backscatter)
+- RNN basics and the vanishing gradient problem
+- LSTM architecture: gates, cell state, and memory mechanisms
+- Philippine drought monitoring context (Mindanao agriculture)
+
+**Interactive Components:**
+- LSTM architecture visualization
+- Gradient problem demonstration
+- Mini-challenge: Calculate gradient decay
+- Discussion: LSTM gates in drought scenarios
+
+**Materials:** Theory slides + demo notebook in TensorFlow/Keras (student + instructor versions, synthetic data)
+
+[Start Session 1 →](sessions/session1.qmd){.btn .btn-primary}
+
+---
+
+### Session 2: Hands-On LSTM Drought Monitoring Lab (2.5 hours)
+
+Build a complete end-to-end drought forecasting system for Mindanao agricultural regions.
+
+**What You'll Build:**
+- Monthly Sentinel-2 NDVI series from Google Earth Engine (or a cached sample)
+- PyTorch LSTM with temporal train/validation/test split and early stopping
+- 1-month-ahead NDVI forecasts compared with simple baselines
+- Drought alerts scored with precision and recall
+
+**Case Study:** Bukidnon and South Cotabato drought forecasting
+
+**Lab Structure:**
+1. Earth Engine connection and data loading (30 min)
+2. Exploration and seasonal statistics (20 min)
+3. Sliding windows, temporal split, scaling (30 min)
+4. PyTorch LSTM and training loop (40 min)
+5. Evaluation against baselines (20 min)
+6. Drought alerts and discussion (10 min)
+
+**Materials:** Lab guide + 2 notebooks (student with TODOs + instructor solution)
+
+[Start Session 2 Lab →](sessions/session2.qmd){.btn .btn-primary}
+
+---
+
+### Session 3: Emerging AI Trends in Earth Observation (2 hours)
+
+Explore cutting-edge technologies transforming EO: foundation models, self-supervised learning, and explainable AI.
+
+**Part 1: Geospatial Foundation Models and Embeddings (45 min)**
+- What foundation models are and why they matter
+- Open GeoFMs: Prithvi-EO-2.0, Clay, TerraMind, Copernicus-FM, DOFA, SatMAE
+- Embedding datasets: AlphaEarth Satellite Embedding, Tessera, OlmoEarth
+- Philippine project ideas: floods, crops, mangroves, drought
+
+**Part 2: On-board AI (15 min)**
+- Φsat-2 and foundation models running in orbit
+
+**Part 3: Self-Supervised Learning (20 min)**
+- Learning from unlabelled satellite archives
+- Masked autoencoding, contrastive learning, cross-modal learning
+
+**Part 4: Explainable AI (20 min)**
+- Why explainability matters for operational deployment
+- SHAP, LIME, Grad-CAM, Integrated Gradients
+- Building stakeholder trust
+
+**Materials:** Theory slides + decision frameworks + resource links
+
+[Start Session 3 →](sessions/session3.qmd){.btn .btn-primary}
+
+---
+
+### Session 4: Synthesis, Q&A, and Pathway to Continued Learning (2 hours)
+
+Bring together all 4 days of learning with best practices, community building, and your action plan.
+
+**Part 1: 4-Day Journey Recap (25 min)**
+- Day-by-day synthesis (Python → Foundation Models)
+- Technique selection matrix
+- When to use what approach
+
+**Part 2: Best Practices for Deployment (30 min)**
+- Data-centric AI mindset
+- Validation strategies (temporal, spatial)
+- Handling class imbalance
+- Model monitoring and maintenance
+- Pre-deployment checklist
+
+**Part 3: Philippine EO Platforms & Resources (20 min)**
+- CopPhil Infrastructure (Copernicus mirror site) and CopPhil Digital Campus
+- SkAI-Pinas (DIMER, AIPI)
+- PhilSA Space+ Data Dashboard
+- External resources and learning paths
+
+**Part 4: Continued Learning & Community (15 min)**
+- Learning with peers in your agency
+- Ways to share and contribute
+
+**Part 5: Your Next Steps (20 min)**
+- Immediate actions (this week)
+- 3-month roadmap
+- Project ideas by agency/sector
+- Career pathways
+
+**Part 6: Open Q&A (10 min)**
+- Common challenges and solutions
+- Technical troubleshooting
+- Agency-specific guidance
+
+**Materials:** Synthesis slides + action plan template + resource guide
+
+[Start Session 4 →](sessions/session4.qmd){.btn .btn-primary}
+
+## Prerequisites
+
+::: {.prerequisites}
+### From Previous Days
+
+Before Day 4, you should have completed:
+
+- [ ] Day 1: EO Data & AI/ML Fundamentals
+- [ ] Day 2: Machine Learning for Earth Observation
+- [ ] Day 3: Deep Learning for Earth Observation
+- [ ] Hands-on experience with all previous notebooks and exercises
+
+### Technical Setup
+
+- [ ] Google account for Google Colab (a CPU runtime is enough for Day 4)
+- [ ] Optional: Earth Engine access with a registered Google Cloud project (for live NDVI in Session 2)
+- [ ] Basic familiarity with TensorFlow/Keras or PyTorch from Days 2-3
+
+[Complete Setup Guide →](../resources/setup.qmd){.btn .btn-outline-primary}
+:::
+
+## Course Completion
+
+Upon completing Day 4, you will:
+
+- ✅ **Master** time series analysis with LSTMs for drought forecasting
+- ✅ **Understand** cutting-edge AI trends (Foundation Models, SSL, XAI)
+- ✅ **Synthesize** all 4 days of learning into operational workflows
+- ✅ **Know** where to find Philippine EO data platforms and further learning resources
+- ✅ **Be equipped** to propose and lead EO AI projects in your agency
+
+::: {.callout-tip}
+## Ready to Start Day 4?
+
+Begin with Session 1 to master LSTMs, then progress through the hands-on drought lab, explore emerging AI trends, and conclude with a comprehensive synthesis of your entire learning journey.
+
+**Estimated Time:** 8 hours (1 full day)  
+**Format:** 2 theory + 1 hands-on lab + 1 synthesis session
+
+[Begin Session 1 →](sessions/session1.qmd){.btn .btn-primary .btn-lg}
+:::
+
+---
+
+## Quick Links
+
+::: {.quick-links}
+[Session 1: LSTMs Theory](sessions/session1.qmd){.quick-link}
+[Session 2: Drought Monitoring Lab](sessions/session2.qmd){.quick-link}
+[Session 3: Emerging AI Trends](sessions/session3.qmd){.quick-link}
+[Session 4: Synthesis & Next Steps](sessions/session4.qmd){.quick-link}
+[Setup Guide](../resources/setup.qmd){.quick-link}
+[Download Materials](../resources/downloads.qmd){.quick-link}
+[Philippine EO Resources](../resources/philippine-eo.qmd){.quick-link}
+[FAQ](../resources/faq.qmd){.quick-link}
+[Glossary](../resources/glossary.qmd){.quick-link}
+[Cheat Sheets](../resources/cheatsheets.qmd){.quick-link}
+:::
+
+---
+
+*Day 4: Time Series Analysis, Emerging Trends, and Sustainable Learning - 4-Day Training on AI/ML for Earth Observation.*
