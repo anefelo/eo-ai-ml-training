@@ -49,7 +49,7 @@ Registration is usually immediate. See also the [Setup Guide](../../resources/se
 ::: {.download-box}
 **Download Option:**
 
-[Download .ipynb File](Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-primary download="Day1_Session4_Google_Earth_Engine.ipynb"}
+[Download .ipynb File](https://anefelo.github.io/eo-ai-ml-training/day1/notebooks/Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-primary download="Day1_Session4_Google_Earth_Engine.ipynb"}
 
 **Requirements for local use:** `pip install earthengine-api geemap` (geemap is optional, for interactive maps)
 :::

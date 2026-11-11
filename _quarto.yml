@@ -11,6 +11,7 @@ project:
   resources:
     - images/**
     - pdfs/**
+    - "day*/notebooks/*.ipynb"   # raw notebooks for the Download buttons (pages link the rendered .html)
 
 website:
   title: "EO AI/ML Training"

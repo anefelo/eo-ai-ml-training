@@ -51,7 +51,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day1/03_session3_python_geospatial.pdf){.btn .btn-outline download="03_session3_python_geospatial.pdf"}
 
 **Jupyter Notebook:**
-[Download Notebook](../day1/notebooks/Day1_Session3_Python_Geospatial_Data.ipynb){.btn .btn-primary download="Day1_Session3_Python_Geospatial_Data.ipynb"}
+[Download Notebook](https://anefelo.github.io/eo-ai-ml-training/day1/notebooks/Day1_Session3_Python_Geospatial_Data.ipynb){.btn .btn-primary download="Day1_Session3_Python_Geospatial_Data.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day1/notebooks/Day1_Session3_Python_Geospatial_Data.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -70,7 +70,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day1/04_session4_google_earth_engine.pdf){.btn .btn-outline download="04_session4_google_earth_engine.pdf"}
 
 **Jupyter Notebook:**
-[Download Notebook](../day1/notebooks/Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-primary download="Day1_Session4_Google_Earth_Engine.ipynb"}
+[Download Notebook](https://anefelo.github.io/eo-ai-ml-training/day1/notebooks/Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-primary download="Day1_Session4_Google_Earth_Engine.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day1/notebooks/Day1_Session4_Google_Earth_Engine.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -91,8 +91,8 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day2/session1_random_forest.pdf){.btn .btn-outline download="session1_random_forest.pdf"}
 
 **Jupyter Notebooks:**
-[Theory Notebook](../day2/notebooks/session1_theory_notebook_STUDENT.ipynb){.btn .btn-primary download="session1_theory_notebook_STUDENT.ipynb"}
-[Hands-on Lab](../day2/notebooks/session1_hands_on_lab_student.ipynb){.btn .btn-primary download="session1_hands_on_lab_student.ipynb"}
+[Theory Notebook](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session1_theory_notebook_STUDENT.ipynb){.btn .btn-primary download="session1_theory_notebook_STUDENT.ipynb"}
+[Hands-on Lab](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session1_hands_on_lab_student.ipynb){.btn .btn-primary download="session1_hands_on_lab_student.ipynb"}
 [Open Theory in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session1_theory_notebook_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 [Open Lab in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session1_hands_on_lab_student.ipynb){.btn .btn-outline target="_blank"}
 
@@ -111,7 +111,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day2/session2_palawan_lab.pdf){.btn .btn-outline download="session2_palawan_lab.pdf"}
 
 **Jupyter Notebook:**
-[Extended Lab](../day2/notebooks/session2_extended_lab_STUDENT.ipynb){.btn .btn-primary download="session2_extended_lab_STUDENT.ipynb"}
+[Extended Lab](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session2_extended_lab_STUDENT.ipynb){.btn .btn-primary download="session2_extended_lab_STUDENT.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session2_extended_lab_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -129,7 +129,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day2/session3_deep_learning.pdf){.btn .btn-outline download="session3_deep_learning.pdf"}
 
 **Jupyter Notebook:**
-[Theory Interactive](../day2/notebooks/session3_theory_interactive.ipynb){.btn .btn-primary download="session3_theory_interactive.ipynb"}
+[Theory Interactive](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session3_theory_interactive.ipynb){.btn .btn-primary download="session3_theory_interactive.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session3_theory_interactive.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -147,8 +147,8 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day2/session4_cnn_lab.pdf){.btn .btn-outline download="session4_cnn_lab.pdf"}
 
 **Jupyter Notebooks:**
-[CNN Classification](../day2/notebooks/session4_cnn_classification_STUDENT.ipynb){.btn .btn-primary download="session4_cnn_classification_STUDENT.ipynb"}
-[Transfer Learning](../day2/notebooks/session4_transfer_learning_STUDENT.ipynb){.btn .btn-primary download="session4_transfer_learning_STUDENT.ipynb"}
+[CNN Classification](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session4_cnn_classification_STUDENT.ipynb){.btn .btn-primary download="session4_cnn_classification_STUDENT.ipynb"}
+[Transfer Learning](https://anefelo.github.io/eo-ai-ml-training/day2/notebooks/session4_transfer_learning_STUDENT.ipynb){.btn .btn-primary download="session4_transfer_learning_STUDENT.ipynb"}
 [Open CNN in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session4_cnn_classification_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 [Open Transfer Learning in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day2/notebooks/session4_transfer_learning_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 
@@ -184,7 +184,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day3/session2_flood_mapping_lab.pdf){.btn .btn-outline download="session2_flood_mapping_lab.pdf"}
 
 **Jupyter Notebook:**
-[Flood Mapping Lab](../day3/notebooks/Day_3_session_2.ipynb){.btn .btn-primary download="Day_3_session_2.ipynb"}
+[Flood Mapping Lab](https://anefelo.github.io/eo-ai-ml-training/day3/notebooks/Day_3_session_2.ipynb){.btn .btn-primary download="Day_3_session_2.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day3/notebooks/Day_3_session_2.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -237,7 +237,7 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day4/session1_lstm_time_series.pdf){.btn .btn-outline download="session1_lstm_time_series.pdf"}
 
 **Jupyter Notebook:**
-[LSTM Demo](../day4/notebooks/day4_session1_lstm_demo_STUDENT.ipynb){.btn .btn-primary download="day4_session1_lstm_demo_STUDENT.ipynb"}
+[LSTM Demo](https://anefelo.github.io/eo-ai-ml-training/day4/notebooks/day4_session1_lstm_demo_STUDENT.ipynb){.btn .btn-primary download="day4_session1_lstm_demo_STUDENT.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day4/notebooks/day4_session1_lstm_demo_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 
 **Topics:**
@@ -257,11 +257,11 @@ All EO AI/ML Training materials in one place: slide decks (online and PDF), Jupy
 [Download PDF](../pdfs/day4/session2_drought_lab.pdf){.btn .btn-outline download="session2_drought_lab.pdf"}
 
 **Jupyter Notebook:**
-[Drought Lab](../day4/notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb){.btn .btn-primary download="day4_session2_lstm_drought_lab_STUDENT.ipynb"}
+[Drought Lab](https://anefelo.github.io/eo-ai-ml-training/day4/notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb){.btn .btn-primary download="day4_session2_lstm_drought_lab_STUDENT.ipynb"}
 [Open in Colab](https://colab.research.google.com/github/anefelo/eo-ai-ml-training/blob/main/day4/notebooks/day4_session2_lstm_drought_lab_STUDENT.ipynb){.btn .btn-outline target="_blank"}
 
 **Instructor Notebook:**
-[Download Notebook](../day4/notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb){.btn .btn-outline download="day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb"}
+[Download Notebook](https://anefelo.github.io/eo-ai-ml-training/day4/notebooks/day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb){.btn .btn-outline download="day4_session2_lstm_drought_lab_INSTRUCTOR.ipynb"}
 
 **Topics:**
 - Multi-variate time series
