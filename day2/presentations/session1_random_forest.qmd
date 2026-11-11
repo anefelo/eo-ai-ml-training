@@ -52,8 +52,6 @@ format:
 - Perform accuracy assessment and interpret results
 - Apply classification to Palawan land cover mapping
 
----
-
 # Part A: Theory {background-color="#2C5F77"}
 
 ## What is Supervised Classification?
@@ -134,8 +132,6 @@ flowchart LR
 ## Philippine Context
 Accurate land cover classification supports monitoring of **Protected Areas**, **REDD+ programs**, **agricultural expansion**, and **disaster response** (typhoons, floods).
 :::
-
----
 
 # Decision Trees {background-color="#2C5F77"}
 
@@ -268,8 +264,6 @@ Test: **NDWI > 0?**
 ## The Solution
 **Random Forest** addresses these limitations by combining many decision trees!
 :::
-
----
 
 # Random Forest {background-color="#2C5F77"}
 
@@ -532,8 +526,6 @@ GEE's `ee.Classifier.smileRandomForest()` defaults:
    - Fast prediction
 :::
 
----
-
 # Feature Importance {background-color="#2C5F77"}
 
 ## Understanding Feature Importance
@@ -631,8 +623,6 @@ Green       ███                           0.018
 - **Data collection priorities:** Focus on important bands
 - **Model interpretation:** Understand classification logic
 - **Domain validation:** Does importance match EO theory?
-
----
 
 # Accuracy Assessment {background-color="#2C5F77"}
 
@@ -917,8 +907,6 @@ Quality training data is more important than quantity. 100 high-quality samples 
 
 :::
 
----
-
 # Google Earth Engine {background-color="#2C5F77"}
 
 ## Why Google Earth Engine?
@@ -1118,8 +1106,6 @@ Map = geemap.Map()
 Map.addLayer(classified, vis_params, 'Land Cover')
 Map
 ```
-
----
 
 # Philippine NRM Applications {background-color="#2C5F77"}
 
@@ -1401,8 +1387,6 @@ Map
 :::
 
 **Coming up:** Hands-on lab with Palawan land cover classification!
-
----
 
 # Part B: Hands-on Lab {background-color="#2C5F77"}
 

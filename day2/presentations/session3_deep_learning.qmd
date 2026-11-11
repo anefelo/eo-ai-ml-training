@@ -46,8 +46,6 @@ format:
 :::
 :::
 
----
-
 # ML → DL Transition {background-color="#2C5F77"}
 
 ## From feature engineering to feature learning
@@ -75,8 +73,6 @@ format:
 - **Random Forest:** small labeled sets, interpretability needed, fast prototype
 - **CNNs:** complex spatial patterns, larger datasets, highest accuracy
 :::
-
----
 
 # Neural Network Fundamentals {background-color="#2C5F77"}
 
@@ -112,8 +108,6 @@ class Perceptron:
 4. Update weights  
 
 **Key hyperparameters:** learning rate, batch size, epochs
-
----
 
 # Convolutional Neural Networks {background-color="#2C5F77"}
 
@@ -162,8 +156,6 @@ Input (256×256×C)
 :::
 :::
 
----
-
 # EO Tasks and CNNs {background-color="#2C5F77"}
 
 ## Matching methods to problems
@@ -177,8 +169,6 @@ Input (256×256×C)
 
 **Philippine use cases:**
 - Land cover, cloud detection, floods, buildings, mining, DRM
-
----
 
 # Practical Considerations {background-color="#2C5F77"}
 
@@ -248,8 +238,6 @@ aug = keras.Sequential([
 
 Tips: mixed precision, batch size tuning, smaller chips
 
----
-
 # Philippine EO Applications {background-color="#2C5F77"}
 
 ## Where CNNs fit
@@ -260,8 +248,6 @@ Tips: mixed precision, batch size tuning, smaller chips
 - Damage assessment (object detection on very‑high‑resolution imagery)
 
 **Potential users:** PhilSA, DENR, DA, NDRRMC, LGUs
-
----
 
 # Summary & Resources {background-color="#2C5F77"}
 

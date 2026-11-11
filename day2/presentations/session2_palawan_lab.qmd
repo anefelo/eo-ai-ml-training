@@ -43,8 +43,6 @@ Central Palawan, 1° × 1° box (~12,000 km²)
 
 **Prerequisites:** Session 1 completed, GEE authenticated
 
----
-
 # Part A: Advanced Feature Engineering {background-color="#2C5F77"}
 
 ## Beyond Spectral Indices
@@ -135,8 +133,6 @@ features = features.addBands([contrast, entropy,
 
 **Computational Note:** GLCM is intensive - use 3×3 windows for large areas
 
----
-
 # Multi-temporal Composites {background-color="#2C5F77"}
 
 ## Philippine Seasons
@@ -226,8 +222,6 @@ aspect = ee.Terrain.aspect(dem)
 features = features.addBands([elevation, slope, aspect])
 ```
 
----
-
 # Palawan 8-Class Scheme {background-color="#2C5F77"}
 
 ## Classification Classes
@@ -287,8 +281,6 @@ features = features.addBands([elevation, slope, aspect])
 - Aspect
 :::
 :::
-
----
 
 # Hyperparameter Optimization {background-color="#2C5F77"}
 
@@ -439,8 +431,6 @@ print('OOB error:', oob_error.getInfo())
 
 **Advantage:** No need for separate validation set (~37% of data used for OOB)
 
----
-
 # Change Detection {background-color="#2C5F77"}
 
 ## 2020 vs 2024 Comparison
@@ -511,8 +501,6 @@ print('Forest Loss (hectares):', forest_loss_area / 10000)
 - 12% forest → agriculture (main driver)
 - 5% agriculture → urban (development)
 - Grassland mostly stable or converts to agriculture
-
----
 
 # Post-Processing Techniques {background-color="#2C5F77"}
 
@@ -718,8 +706,6 @@ flowchart LR
 - ✓ Validate against high-resolution imagery
 - ✓ Ensure ecologically plausible results
 
----
-
 # Protected Area Monitoring {background-color="#2C5F77"}
 
 ## Palawan Conservation Context
@@ -812,8 +798,6 @@ Map.addLayer(hotspots, {min: 0, max: 50, palette: ['white', 'yellow', 'red']},
 
 **Use Case:** Target field verification and enforcement
 
----
-
 # Expected Outcomes {background-color="#2C5F77"}
 
 ## Performance Targets
@@ -863,8 +847,6 @@ By the end of this session:
 ✅ Exported GeoTIFF for QGIS integration  
 ✅ Area statistics CSV  
 
----
-
 # NRM Applications {background-color="#2C5F77"}
 
 ## DENR Use Cases
@@ -912,8 +894,6 @@ By the end of this session:
 - Detect encroachment early
 - Evidence for advocacy
 
----
-
 # Technical Considerations {background-color="#2C5F77"}
 
 ## Computational Challenges
@@ -956,8 +936,6 @@ composite = collection.median()  # Slow
 # Do:
 composite = collection.limit(50).median()  # Faster, usually sufficient
 ```
-
----
 
 # Summary {background-color="#2C5F77"}
 

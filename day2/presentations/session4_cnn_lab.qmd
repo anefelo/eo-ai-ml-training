@@ -46,8 +46,6 @@ format:
 :::
 :::
 
----
-
 # Setup & Data Preparation {background-color="#2C5F77"}
 
 ## Colab GPU + Environment
@@ -80,8 +78,6 @@ path = keras.utils.get_file("EuroSAT_RGB.zip", url, extract=True)
 ```
 
 **Preprocessing:** Normalize to [0,1], integer labels (sparse loss), split 70/15/15
-
----
 
 # Building a CNN from Scratch {background-color="#2C5F77"}
 
@@ -139,8 +135,6 @@ history = model.fit(ds_train.map(norm).shuffle(1000).batch(64).prefetch(2),
 **Healthy curves:** train↓, val↓ then plateau; small gap  
 **Overfitting:** large gap → add dropout/augmentation
 
----
-
 # Evaluation & Error Analysis {background-color="#2C5F77"}
 
 ## Accuracy + Confusion Matrix
@@ -178,8 +172,6 @@ for ax, i in zip(axes.flat, wrong):
 - Investigate systematic errors  
 - Adjust augmentation / architecture accordingly
 
----
-
 # Data Augmentation {background-color="#2C5F77"}
 
 ## EO‑aware augmentations
@@ -199,8 +191,6 @@ data_aug = tf.keras.Sequential([
 - Rotations/flips OK for overhead imagery  
 - Brightness/contrast for atmospherics  
 - Avoid orientation‑critical tasks if sensitive (roads)
-
----
 
 # Transfer Learning (ResNet50) {background-color="#2C5F77"}
 
@@ -242,8 +232,6 @@ model = Model(base.input, out)
 
 **Tip:** Use the fastest path during live sessions, fine‑tune offline later
 
----
-
 # Troubleshooting {background-color="#2C5F77"}
 
 ## Common issues & fixes
@@ -253,8 +241,6 @@ model = Model(base.input, out)
 - **Accuracy stuck ~10%:** check labels; learning rate; normalization  
 - **Overfitting:** stronger augmentation; more dropout; L2; early stop  
 - **Slow training:** reduce model depth; use caching/prefetch
-
----
 
 # Philippine Context {background-color="#2C5F77"}
 
@@ -267,8 +253,6 @@ model = Model(base.input, out)
 - Supports DENR, DA, NDRRMC, LGUs
 
 **Next steps:** move to Day 3 (U‑Net segmentation, flood mapping)
-
----
 
 # Summary & Notebook {background-color="#2C5F77"}
 
